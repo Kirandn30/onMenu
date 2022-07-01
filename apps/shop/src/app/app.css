@@ -1,0 +1,122 @@
+/* Your styles goes here. */
+#card {
+    max-width: 350px;
+    margin: 50px auto 0;
+    text-align: center;
+    display: grid;
+    gap:30px;
+
+}
+
+.header {
+    box-shadow: 0px 9px 9px rgba(229, 229, 229, 0.3);
+    height: 75px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 10px;
+    column-gap: 7px;
+}
+
+.location{
+    transition: 0.2s;
+}
+
+.location:hover{
+ transform: scale(1.1);
+}
+
+.menu{
+    transition: 0.2s;
+    }
+
+.menu:hover{
+    color: #007AFF;
+    transform: scale(1.1);
+}
+
+.branch{
+    min-width: 130px;
+    transition: 0.3s;
+    text-align: center;
+    border: 1px solid #0094FF;
+    border-radius: 5px;
+    padding:3px;
+    color:#0094FF;
+    background-color: #ffffff;
+    cursor: pointer;
+}
+
+.selected-branch {
+    min-width: 130px;
+    transition: 0.3s;
+    text-align: center;
+    border: 1px solid #0094FF;
+    border-radius: 5px;
+    padding: 3px;
+    color: #ffffff;
+    background-color: #0094FF;
+    cursor: pointer;
+}
+
+.branch:hover {
+    transform: scale(1.1);
+}
+
+ .selected-branch:hover {
+     transform: scale(1.1);
+ }
+
+/* //modal */
+
+.modal {
+    position: absolute;
+    text-align: center;
+    background-color: #fff;
+    outline: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    overflow-y: auto;
+    border-radius: 8px;
+    padding: 32px;
+    max-height: 75vh;
+    min-height: 30vh;
+    min-width: 30vw;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.modal-close {
+    right: 8px;
+    top: 8px;
+}
+
+/* //card */
+
+.box{
+    background: #FFFFFF;
+        box-shadow: 0px 2px 8px rgba(229, 229, 229, 0.25);
+        border-radius: 5px;
+        padding: 10px;
+}
+
+/* add */
+.add{
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.add:hover{
+    transform: scale(1.2);
+}
+
+.serviceCards{
+    background: #FFFFFF;
+        box-shadow: 0px 5px 10px rgba(230, 230, 230, 0.5);
+        border-radius: 10px;
+        min-height: 25vh;
+        padding:15px
+}

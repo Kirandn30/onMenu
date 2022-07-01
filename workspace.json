@@ -2,6 +2,11 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "admin-dashboard": "apps/admin-dashboard",
+    "admin-dashboard-e2e": "apps/admin-dashboard-e2e",
+    "miurac-image": "libs/miurac-image",
+    "shop": "apps/shop",
+    "shop-e2e": "apps/shop-e2e",
     "user": "apps/user",
     "user-e2e": "apps/user-e2e"
   }
