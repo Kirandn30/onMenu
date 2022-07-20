@@ -4,7 +4,7 @@ import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut } from 'fire
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { analytics } from '../../configs/firebaseConfig';
-import { removeUserError, removeUserLoading, setPhone, setStep, setUser, setUserError, setUserLoading } from './authSlice';
+import { removeUserError, removeUserLoading, setPhone, setStep, setUser, setUserError, setUserLoading } from '../../redux/authSlice';
 
 type stepType = 'phone' | 'otp'
 

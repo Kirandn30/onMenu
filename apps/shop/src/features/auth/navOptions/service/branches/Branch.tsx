@@ -1,4 +1,4 @@
-import { MyLocation } from '@mui/icons-material'
+import { CloudUploadOutlined, MyLocation } from '@mui/icons-material'
 import { Button, CircularProgress, IconButton, Typography } from '@mui/material'
 import { Simplemodal } from '../../../../../components/modal'
 import InputField from '../../../../../ui-components/Input'
@@ -12,11 +12,13 @@ import { addBranch, branchesType, setBranch, setLoading, setSelectedBranches } f
 import { RootState } from '../../../../../redux/store'
 import { v4 as uuidv4 } from 'uuid';
 import { setError, setNotification } from '../../../../../redux/auth'
-import { db } from '../../../../../config/firebase'
+import { app, db } from '../../../../../config/firebase'
 import { collection, doc, getDocs, orderBy, query, setDoc } from 'firebase/firestore'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Droppable } from "react-beautiful-dnd";
 import { Draggable } from "react-beautiful-dnd";
+import { MiuracImage } from '@on-menu/miurac-image'
+import { Login } from '../../../login'
 
 
 const style = { display: "flex", alignItems: "center", gap: "25px" }
@@ -27,8 +29,8 @@ type Inputs = {
     Longitude: string
     address: string
     city: string
+    branchImage: string
 }
-
 
 //Yup Validation
 const schema = yup.object({
@@ -42,19 +44,19 @@ const schema = yup.object({
 export const Branch = ({ localBranches, setLocalBranches }: { localBranches: branchesType[], setLocalBranches: any }) => {
     const [modal, setModal] = useState(false)
     const [locationColor, setLocationColor] = useState(false)
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm<Inputs>({
+    const [branchImage, setBranchImage] = useState<string | null>(null)
+    const { register, handleSubmit, setValue, setError, clearErrors, formState: { errors } } = useForm<Inputs>({
         resolver: yupResolver(schema)
     });
     const { branches, status, loading, selectedBranch } = useSelector((state: RootState) => state.branches)
     const navigate = useNavigate()
-
     const dispatch = useDispatch()
     const { shopid, branchid } = useParams()
 
     const getBranches = async () => {
         try {
             if (!shopid) return
-            const ref = collection(db, "roles", shopid, "branches")
+            const ref = collection(db, "shops", shopid, "branches")
             const q = query(ref, orderBy("index", "asc"))
             const querySnapshot = await getDocs(q)
             const data = querySnapshot.docs.map(doc => doc.data())
@@ -68,7 +70,7 @@ export const Branch = ({ localBranches, setLocalBranches }: { localBranches: bra
                 navigate(`/${shopid}/${branch['id']}`)
             }
         } catch (error: any) {
-            dispatch(setError(error.message))
+            // dispatch(setError(error.message))
         }
     }
 
@@ -86,6 +88,12 @@ export const Branch = ({ localBranches, setLocalBranches }: { localBranches: bra
 
 
     const onsubmit = async (data: Inputs) => {
+        if (!branchImage) {
+            setError('branchImage', { message: "Image is required", type: 'required' })
+            return
+        } else {
+            clearErrors('branchImage')
+        }
         try {
             dispatch(setLoading(true))
             const id = `${data.branchName.replace(" ", "-")}-${uuidv4()}`
@@ -93,17 +101,21 @@ export const Branch = ({ localBranches, setLocalBranches }: { localBranches: bra
                 ...data,
                 id: id,
                 enabled: false,
+                branchImage,
                 index: branches?.length
             }
             if (!shopid) return
-            await setDoc(doc(db, "roles", shopid, "branches", id), branchInfo)
+            await setDoc(doc(db, "shops", shopid, "branches", id), branchInfo)
             dispatch(addBranch(branchInfo))
             setModal(false)
             dispatch(setNotification("Branch added successfully"))
             dispatch(setLoading(false))
         } catch (error: any) {
+            // @ts-ignore: Unreachable code error
             dispatch(setError(error.message))
         }
+
+        handleClose()
     }
 
     const getGeo = () => {
@@ -121,10 +133,23 @@ export const Branch = ({ localBranches, setLocalBranches }: { localBranches: bra
             "Longitude", position.coords.longitude
         )
     }
+
+    const handleClose = () => {
+        setModal(false)
+        setBranchImage(null)
+        setValue("branchName", "")
+        setValue("Latitude", "")
+        setValue("Longitude", "")
+        setValue("address", "")
+        setValue("city", "")
+        clearErrors('branchImage')
+    }
+
     if (status === "loading") return <CircularProgress />
+
     return (
         <div className='box' style={{ height: "60px", display: "flex", alignItems: 'center' }}>
-            <Simplemodal open={modal} onClose={() => setModal(false)}>
+            <Simplemodal open={modal} onClose={handleClose}>
                 <Typography style={{ marginBottom: "30px" }} variant='h5'>Add branch info</Typography>
                 <form onSubmit={handleSubmit(onsubmit)}>
                     <div style={{ display: "grid", gridTemplate: "repeat(4,1fr)/1fr 3fr", alignItems: "center", justifyItems: "left", gap: "15px" }}>
@@ -150,21 +175,41 @@ export const Branch = ({ localBranches, setLocalBranches }: { localBranches: bra
                             <InputField placeholder='Address' fullWidth forminput={{ ...register("address") }} error={Boolean(errors.address)}
                                 helperText={errors.address?.message} />
                         </div>
+
                         <div><label>City:</label></div>
                         <div>
                             <InputField placeholder='City' fullWidth forminput={{ ...register("city") }} error={Boolean(errors.city)}
                                 helperText={errors.city?.message} />
                         </div>
+
+                        <div><label>Branch image :</label></div>
+                        {branchImage ?
+                            <img width="450px" height="150px" src={branchImage} alt="menu" /> :
+                            <div>
+                                <MiuracImage app={app} authComponent={<Login />} buttonComponent={<Upload />}
+                                    editConfig={{ aspectX: 3, aspectY: 1 }} updateFirestore={true}
+                                    setUrlFunc={(url) => setBranchImage(url)}
+                                />
+                                <Typography color={'error'} >
+                                    {errors['branchImage']?.message}
+                                </Typography>
+                            </div>
+                        }
+
                     </div >
+
                     <div style={{ display: "flex", justifyContent: "center", gap: "30px", marginTop: "30px" }}>
                         <Button size='small' onClick={() => setModal(false)} variant='outlined'>Cancel</Button>
                         <Button disabled={loading} size='small' type='submit' variant='contained'>save</Button>
                     </div>
+
                 </form>
             </Simplemodal >
+
             <div style={{ display: "flex", gap: "10px" }}>
                 <Typography variant='subtitle1'>Branches</Typography>
             </div>
+
             <Droppable droppableId="BranchesList" direction="horizontal">
                 {(provided, snapshot) => (
                     <div ref={provided.innerRef} {...provided.droppableProps} style={{ display: "flex", gap: "20px", marginLeft: "25px" }}>
@@ -183,7 +228,6 @@ export const Branch = ({ localBranches, setLocalBranches }: { localBranches: bra
                                         </div>
                                     )
                                     }
-
                                 </Draggable>
                             )
                         })}
@@ -194,5 +238,20 @@ export const Branch = ({ localBranches, setLocalBranches }: { localBranches: bra
                 }
             </Droppable >
         </div >
+    )
+}
+
+const Upload = () => {
+    return (
+        <div style={{
+            backgroundColor: "#fbfbff", height: "150px", width: "450px", border: "1px dashed #D3D3D3", borderRadius: "10px", borderSpacing: "10px", display: "flex", justifyContent: "center", alignItems: "center"
+        }}>
+            <Button fullWidth style={{ height: "150px" }}>
+                <div>
+                    <CloudUploadOutlined style={{ color: "#696969", }} />
+                    <Typography style={{ color: "#D3D3D3" }} display="block" variant='caption'>Upload a image for menu</Typography>
+                </div>
+            </Button>
+        </div>
     )
 }

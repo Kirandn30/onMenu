@@ -1,1 +1,223 @@
 /* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+body{
+  font-family: poppins;
+}
+.App {
+  text-align: center;
+  max-width: 400px;
+  width: calc(100% - 24px);
+  margin: 0 auto;
+}
+.onmenu-input {
+  border: 1px solid rgba(56, 66, 97, 0.18);
+  box-sizing: border-box;
+  filter: drop-shadow(8px 8px 8px rgba(202, 204, 255, 0.2));
+  border-radius: 8px;
+  height: 40px;
+  width: 100%;
+  max-width: 350px;
+  padding-left: 15px;
+  margin: 10px auto;
+}
+
+.modal {  
+  position: absolute;
+  text-align: center;
+  background-color: #fff;
+  outline: 0;
+  padding: 16px;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -65%);
+  overflow-y: auto;
+  border-radius: 8px;
+  /* height: 80%; */
+  min-height: 550px;
+  width: 400px;
+}
+
+.center-align{
+  align-items: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.margin1 {
+  margin: 8px;
+}
+
+.margin2 {
+  margin: 16px;
+}
+
+.margin3 {
+  margin: 24px;
+}
+
+.margin4 {
+  margin: 32px;
+}
+
+.margin5 {
+  margin: 40px;
+}
+
+.padding1 {
+  padding: 8px;
+}
+
+.padding2 {
+  padding: 16px;
+}
+
+.padding3 {
+  padding: 24px;
+}
+
+.padding4 {
+  padding: 32px;
+}
+
+.padding5 {
+  padding: 40px;
+}
+
+.border10 {
+  border-radius: 10px;
+}
+
+.justify-space-between {
+  justify-content: space-between;
+}
+
+.font100 {
+  font-weight: 100;
+}
+
+.font200 {
+  font-weight: 200;
+}
+
+.font300 {
+  font-weight: 300;
+}
+
+.font400 {
+  font-weight: 400;
+}
+
+.font500 {
+  font-weight: 500;
+}
+
+.font600 {
+  font-weight: 600;
+}
+
+.font700 {
+  font-weight: 700;
+}
+
+.font800 {
+  font-weight: 800;
+}
+
+.font900 {
+  font-weight: 900;
+}
+
+.black-text {
+  color: black;
+}
+
+.white-text {
+  color: white;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.bottom-nav-icon {
+  width: 25px;
+  height: 25px;
+  margin-bottom: 8px;
+}
+
+.hide-scroll::-webkit-scrollbar { 
+  width: 0 !important;
+  height: 0;    
+}
+
+ul
+{
+    list-style-type:none;
+    padding:0px;
+    margin:0px;
+}
+
+.round-corners{
+  border-radius: 14px 14px 0px 0px;
+}
+
+.dish-display-paper{
+  max-height:550px;
+}
+
+.text-ellipsis{
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pointer-cursor{
+  cursor: pointer;
+}
+
+.search-panel {
+  display: flex;
+}
+
+.search-panel__filters {
+  flex: 1;
+}
+
+.search-panel__results {
+  flex: 3;
+}
+
+.searchbox {
+  margin-bottom: 2rem;
+}
+
+.black-button{
+  padding: 2px 4px 2px 8px;
+  border-radius: 30px;
+  height: 24px;
+  background-color:#fff;
+  /* color: aliceblue; */
+  border: none;
+  margin:8px 8px 0px 8px;
+  /* max-width:100px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap; */
+}
+a{
+  text-decoration: none;
+  color:inherit;
+}

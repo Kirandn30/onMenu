@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { getAuth, updateProfile, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, User } from "firebase/auth";
 // import { app } from '../firebaseConfig/config';
 import { collection, addDoc, setDoc, doc, getDoc, query, where, getDocs } from "firebase/firestore";
+import { RootState } from './store/store';
 // import { db } from "../firebaseConfig/config"
 
 type UserDetailState = {
@@ -13,7 +14,9 @@ type UserDetailState = {
     message: string
   } | null,
   user: User | null | undefined
-  phoneNumber: null | number
+  phoneNumber: null | number,
+  feedBack: any,
+  location: any
 }
 
 const initialState: UserDetailState = {
@@ -21,7 +24,9 @@ const initialState: UserDetailState = {
   error: null,
   user: undefined,
   step: "phone",
-  phoneNumber: null
+  phoneNumber: null,
+  feedBack: null,
+  location: null
 }
 
 export const UserSlice = createSlice({
@@ -51,11 +56,19 @@ export const UserSlice = createSlice({
     },
     removeUserError: (state) => {
       state.error = null
-
-    }
+    }, setLocation: (state, action) => {
+      state.location = action.payload
+    },
+    setFeedback: (state, action) => {
+      state.feedBack = action.payload
+    },
   },
 })
 
-export const { setUser, setUserError, setUserLoading, removeUserError, removeUserLoading, setStep, setPhone } = UserSlice.actions
+export const { setUser, setUserError, setUserLoading, removeUserError, removeUserLoading,
+  setStep, setPhone, setLocation, setFeedback } = UserSlice.actions
+
+// import of sanjeev's code
+export const selectAuth = (state: RootState) => state.User;
 
 export default UserSlice.reducer

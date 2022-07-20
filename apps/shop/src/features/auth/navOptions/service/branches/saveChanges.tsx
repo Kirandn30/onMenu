@@ -32,7 +32,7 @@ export const SaveChanges = ({ setIsReodrded, isReodrded, localBranches, setLocal
             const batch = writeBatch(db)
             if (!shopid) return
             localBranches.forEach(branch => {
-                const branchesRef = doc(db, "roles", shopid, "branches", branch.id);
+                const branchesRef = doc(db, "shops", shopid, "branches", branch.id);
                 batch.update(branchesRef, {
                     index: branch.index
                 })

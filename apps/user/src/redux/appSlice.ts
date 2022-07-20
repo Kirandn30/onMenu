@@ -1,75 +1,74 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from "@reduxjs/toolkit"
 
-export interface serviceState {
-    branches: branchesType[]
-    status: string
-    loading: boolean
-    selectedBranch: branchesType | null
-    selectedMenu: menuType | null
-    selectedService: serviceType | null
-    menu: menuType[]
-    services: serviceType[]
+export interface appState {
+    loading: boolean;
+    selectedShopId: string;
+    branches: branchesType[];
+    selectedBranch: branchesType | null;
+    menu: menuType[];
+    selectedMenu: menuType | null;
+    services: serviceType[];
+    selectedService: serviceType | null;
+    cart: any[];
+    selectedOptions: any[]
 }
 
-const initialState: serviceState = {
+const initialState: appState = {
+    loading: true,
+    selectedShopId: "",
     branches: [],
-    status: "loading",
-    loading: false,
     selectedBranch: null,
-    selectedMenu: null,
-    selectedService: null,
     menu: [],
+    selectedMenu: null,
     services: [],
+    selectedService: null,
+    cart: [],
+    selectedOptions: []
 }
 
-export const serviceSlice = createSlice({
-    name: 'service',
+export const appSlice = createSlice({
+    name: 'appSlice',
     initialState,
     reducers: {
         setLoading: (state, action) => {
             state.loading = action.payload
         },
-        setBranch: (state, action) => {
+        setShopId: (state, action) => {
+            state.selectedShopId = action.payload
+        },
+        setBranches: (state, action) => {
             state.branches = action.payload
-            state.selectedBranch = action.payload[0]
-            state.status = "idle"
         },
-        addBranches: (state, action) => {
-            state.branches = [...state.branches, ...action.payload]
-            state.status = "idle"
-        },
-        addBranch: (state, action) => {
-            state.branches = [...state.branches, action.payload]
-            state.status = "idle"
-        },
-        setSelectedBranches: (state, action) => {
+        setSelectedBranch: (state, action) => {
             state.selectedBranch = action.payload
-            state.status = "idle"
         },
         setMenu: (state, action) => {
             state.menu = action.payload
-            state.status = "idle"
         },
         setSelectedMenu: (state, action) => {
             state.selectedMenu = action.payload
-            state.status = "idle"
         },
         setServices: (state, action) => {
             state.services = action.payload
-            state.status = "idle"
         },
         setSelectedService: (state, action) => {
             state.selectedService = action.payload
-            state.status = "idle"
         },
-    },
+        addToCart: (state, action) => {
+            state.cart = action.payload
+        },
+        setSelectedOptions: (state, action) => {
+            state.selectedOptions = action.payload
+        }
+    }
+
 })
 
-// Action creators are generated for each case reducer function
-export const { setBranch, addBranches, addBranch, setLoading, 
-    setSelectedBranches, setMenu, setServices, setSelectedMenu, setSelectedService } = serviceSlice.actions
+export const { setLoading, setShopId, setBranches,
+    setSelectedBranch, setMenu, setSelectedMenu,
+    setServices, setSelectedService, addToCart, setSelectedOptions } = appSlice.actions
 
-export default serviceSlice.reducer
+export default appSlice.reducer
 
 export interface branchesType {
     id: string;
@@ -123,5 +122,20 @@ export interface serviceType {
         serviceImage: string,
         description: string,
         estimatredTime: string,
+        price: string,
     }[]
 }
+
+// export interface optionsType {
+//     id: string,
+//     title: string,
+//     maxallow: string,
+//     index: number,
+//     innerOptions: {
+//         id: string,
+//         name: string,
+//         price: string,
+//         title: string,
+//         index: number,
+//     }[]
+// }[]

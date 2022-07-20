@@ -6,6 +6,8 @@ import { createTheme, ThemeProvider, ThemeOptions } from '@mui/material/styles';
 
 import App from './app/app';
 import store from './redux/store';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 export const theme = createTheme({
   palette: {
@@ -75,7 +77,9 @@ root.render(
   <BrowserRouter>
     <ThemeProvider theme={theme} >
       <Provider store={store}>
-        <App />
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <App />
+        </LocalizationProvider>
       </Provider>
     </ThemeProvider>
   </BrowserRouter>

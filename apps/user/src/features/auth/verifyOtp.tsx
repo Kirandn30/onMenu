@@ -3,7 +3,7 @@ import logo from "../../assets/images/logo.png"
 import otpImg from "../../assets/images/otpImg.svg"
 import { Button, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
+import { RootState } from '../../redux/store/store';
 import OtpInput from 'react-otp-input';
 
 type Props = {

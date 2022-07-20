@@ -4,10 +4,10 @@ import usePhoneAuth from './phoneAuthHook';
 import InputField from '../../input-field/input-field';
 import { Alert, CircularProgress, Snackbar } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
+import { RootState } from '../../redux/store/store';
 import { GetPhoneNumber } from './getPhoneNumber';
 import VerifyOtp from './verifyOtp';
-import { removeUserError } from './authSlice';
+import { removeUserError } from '../../redux/authSlice';
 
 
 /* eslint-disable-next-line */
