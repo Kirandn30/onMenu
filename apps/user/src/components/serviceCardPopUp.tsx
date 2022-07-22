@@ -16,18 +16,19 @@ type serviceCardDetailsProps = {
     viewDetails: boolean
 }
 
-export default function ServiceCardDetails({ setViewDetails, viewDetails }: serviceCardDetailsProps) {
+export function ServiceCardPopUp({ setViewDetails, viewDetails }: serviceCardDetailsProps) {
 
     const dispatch = useDispatch()
     const { selectedService, cart, selectedOptions } = useSelector((state: RootState) => state.appSlice)
 
 
     const handleClick = () => {
-        dispatch(addToCart([...cart, {...selectedService, selectedOptions: selectedOptions}]))
+        const price = calcServiceTotal(selectedService, selectedOptions)
+        dispatch(addToCart([...cart, { ...selectedService, selectedOptions: selectedOptions, price: price }]))
         setViewDetails(false)
         dispatch(setSelectedOptions([]))
     }
-    const handleClose = ()=>{
+    const handleClose = () => {
         setViewDetails(false)
         dispatch(setSelectedOptions([]))
     }
@@ -47,6 +48,22 @@ export default function ServiceCardDetails({ setViewDetails, viewDetails }: serv
                 dispatch(setSelectedOptions([...selectedOptions, { optionIndex, ...io, id: io.id }]))
             }
         }
+    }
+
+    const calcServiceTotal = (selectedService: any, selectedOptions: any) => {
+        var total = parseFloat(selectedService.price)
+        // console.log('price',{selectedVariant,selectSubVariant,selectedAddons,quantity,recommended});
+        total = selectedOptions.length > 0 ? selectedOptions.reduce(function (a: any, b: any) {
+            return a + parseFloat(b['price']);
+        }, total) : total
+        // total = selectedAddons.length > 0 ? selectedAddons.reduce(function (a, b) {
+        //     return a + parseFloat(b['price']);
+        // }, total) : total
+        // if (packingCharge > 0) {
+        //     total = total + parseFloat(packingCharge)
+        // }
+        // var total = quantity ? quantity * total : total
+        return total
     }
 
     const bottomNavStyles: React.CSSProperties = {
@@ -150,3 +167,4 @@ export default function ServiceCardDetails({ setViewDetails, viewDetails }: serv
         </Box>
     );
 }
+

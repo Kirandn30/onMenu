@@ -7,7 +7,7 @@ import { db } from '../configs/firebaseConfig'
 import { serviceType, setSelectedBranch, setSelectedService, setServices } from '../redux/appSlice'
 import { RootState } from '../redux/store/store'
 import { BottomNav } from './bottomNav'
-import ServiceCardDetails from './serviceCardPopUp'
+import { ServiceCardPopUp } from './serviceCardPopUp'
 
 
 export const ServicesComponent = () => {
@@ -106,7 +106,7 @@ export const ServicesComponent = () => {
 
             <BottomNav />
 
-            <ServiceCardDetails setViewDetails={setViewDetails} viewDetails={viewDetails} />
+            <ServiceCardPopUp setViewDetails={setViewDetails} viewDetails={viewDetails} />
 
         </div>
     )

@@ -8,7 +8,7 @@ import InputField from '../input-field/input-field'
 import { serviceType, setSelectedBranch, setSelectedService, setServices } from '../redux/appSlice'
 import { RootState } from '../redux/store/store'
 import { BottomNav } from './bottomNav'
-import ServiceCardDetails from './serviceCardPopUp'
+import { ServiceCardPopUp } from './serviceCardPopUp'
 
 type Props = {}
 
@@ -107,7 +107,7 @@ export const Search = (props: Props) => {
 
             <BottomNav />
 
-            <ServiceCardDetails setViewDetails={setViewDetails} viewDetails={viewDetails} />
+            <ServiceCardPopUp setViewDetails={setViewDetails} viewDetails={viewDetails} />
 
         </div>
     )

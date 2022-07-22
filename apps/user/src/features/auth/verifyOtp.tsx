@@ -5,6 +5,8 @@ import { Button, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/store';
 import OtpInput from 'react-otp-input';
+import Lottie from "lottie-react";
+import lottieOtp from "./lottieOtp.json";
 
 type Props = {
   verifyOtp: (otp: string) => void
@@ -21,7 +23,7 @@ export default function VerifyOtp({ verifyOtp }: Props) {
       <img src={logo} alt="logo" />
       <Typography variant='h5'>Enter your OTP</Typography>
       <Typography>Code is sent to {phoneNumber}</Typography>
-      <img height="100px" src={otpImg} alt="logo" />
+      {/* <Lottie animationData={lottieOtp} loop={true}/> */}
       <div>
         <OtpInput
           value={otp}

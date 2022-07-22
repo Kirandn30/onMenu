@@ -10,7 +10,8 @@ export interface appState {
     services: serviceType[];
     selectedService: serviceType | null;
     cart: any[];
-    selectedOptions: any[]
+    selectedOptions: any[],
+    totalAmount: number,
 }
 
 const initialState: appState = {
@@ -23,7 +24,8 @@ const initialState: appState = {
     services: [],
     selectedService: null,
     cart: [],
-    selectedOptions: []
+    selectedOptions: [],
+    totalAmount: 0,
 }
 
 export const appSlice = createSlice({
@@ -59,13 +61,16 @@ export const appSlice = createSlice({
         },
         setSelectedOptions: (state, action) => {
             state.selectedOptions = action.payload
+        },
+        setSetTotalAmount: (state, action) => {
+            state.totalAmount = action.payload
         }
     }
 
 })
 
 export const { setLoading, setShopId, setBranches,
-    setSelectedBranch, setMenu, setSelectedMenu,
+    setSelectedBranch, setMenu, setSelectedMenu, setSetTotalAmount,
     setServices, setSelectedService, addToCart, setSelectedOptions } = appSlice.actions
 
 export default appSlice.reducer

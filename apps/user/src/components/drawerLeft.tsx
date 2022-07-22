@@ -24,6 +24,7 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store/store';
+import { getAuth, signOut } from 'firebase/auth';
 
 const drawerWidth = 200;
 
@@ -40,7 +41,8 @@ export default function DrawerLeft() {
 
   const theme = useTheme();
   const navigate = useNavigate()
-  const { selectedShopId, selectedBranch } = useSelector((state: RootState) => state.appSlice)
+  const { shopId, branchId } = useParams()
+  // const { selectedShopId, selectedBranch } = useSelector((state: RootState) => state.appSlice)
 
   const [open, setOpen] = React.useState(false);
 
@@ -49,7 +51,7 @@ export default function DrawerLeft() {
       icon: <LocationOnOutlinedIcon />,
       listName: "Location",
       clickFunc: () => {
-          navigate(`/${selectedShopId}/${selectedBranch?.id}`)
+        navigate(`/${shopId}`)
       }
     },
     {
@@ -57,14 +59,13 @@ export default function DrawerLeft() {
       listName: "Timings",
       clickFunc: () => {
         console.log("time clicked");
-
       }
     },
     {
       icon: <ArticleOutlinedIcon />,
       listName: "Menu Page",
       clickFunc: () => {
-
+        navigate(`/${shopId}/${branchId}`)
       }
     },
     {
@@ -99,7 +100,12 @@ export default function DrawerLeft() {
       icon: <LogoutOutlinedIcon />,
       listName: "Logout",
       clickFunc: () => {
-
+        const auth = getAuth();
+        signOut(auth).then(() => {
+          // Sign-out successful.
+        }).catch((error) => {
+          // An error happened.
+        });
       }
     },
 

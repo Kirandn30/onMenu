@@ -15,8 +15,9 @@ type UserDetailState = {
   } | null,
   user: User | null | undefined
   phoneNumber: null | number,
+  name: string,
   feedBack: any,
-  location: any
+  paymentDetails: []
 }
 
 const initialState: UserDetailState = {
@@ -25,8 +26,9 @@ const initialState: UserDetailState = {
   user: undefined,
   step: "phone",
   phoneNumber: null,
+  name: "",
   feedBack: null,
-  location: null
+  paymentDetails: []
 }
 
 export const UserSlice = createSlice({
@@ -56,17 +58,21 @@ export const UserSlice = createSlice({
     },
     removeUserError: (state) => {
       state.error = null
-    }, setLocation: (state, action) => {
-      state.location = action.payload
-    },
+    }, 
+    // setLocation: (state, action) => {
+    //   state.location = action.payload
+    // },
     setFeedback: (state, action) => {
       state.feedBack = action.payload
     },
+    setName: (state, action)=>{
+      state.name = action.payload
+    }
   },
 })
 
 export const { setUser, setUserError, setUserLoading, removeUserError, removeUserLoading,
-  setStep, setPhone, setLocation, setFeedback } = UserSlice.actions
+  setStep, setPhone, setFeedback, setName } = UserSlice.actions
 
 // import of sanjeev's code
 export const selectAuth = (state: RootState) => state.User;

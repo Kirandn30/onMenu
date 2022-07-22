@@ -6,14 +6,13 @@ import usePhoneAuth from "./phoneAuthHook";
 type Props = {}
 
 // eslint-disable-next-line no-empty-pattern
-export default function Logout({}: Props) {
+export default function Logout({ }: Props) {
 
-const {logout}=    usePhoneAuth(app)
+  const { logout } = usePhoneAuth(app)
 
-useEffect(() => {
+  useEffect(() => {
     logout()
-}, [])
+  }, [])
 
-    
   return null;
 }

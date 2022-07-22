@@ -62,10 +62,10 @@ export const BottomNav = () => {
                             <p style={{ margin: 0 }}>Cart</p>
                         </div>
                     </IconButton>
-                    <IconButton sx={iconButtonStyles}>
+                    <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/${branchId}/${menuId}/payment`)}>
                         <div>
                             <PaymentOutlinedIcon />
-                            <p style={{ margin: 0 }}>Wallet</p>
+                            <p style={{ margin: 0 }}>Payment</p>
                         </div>
                     </IconButton>
                 </div>

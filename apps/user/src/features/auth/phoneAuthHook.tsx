@@ -1,16 +1,19 @@
 import { logEvent } from 'firebase/analytics';
 import { FirebaseApp, FirebaseError } from 'firebase/app'
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux';
-import { analytics } from '../../configs/firebaseConfig';
+import { useDispatch, useSelector } from 'react-redux';
+import { analytics, db } from '../../configs/firebaseConfig';
 import { removeUserError, removeUserLoading, setPhone, setStep, setUser, setUserError, setUserLoading } from '../../redux/authSlice';
+import { RootState } from '../../redux/store/store';
 
 type stepType = 'phone' | 'otp'
 
 export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { sendOtp: (phone: string) => void, verifyOtp: (otp: string) => void, logout: () => void } {
     const auth = getAuth(app);
     const dispatch = useDispatch()
+    const { name, phoneNumber } = useSelector((state: RootState) => state.User)
     // const [step, setStep] = useState<stepType>('phone')
     // console.log(step);
 
@@ -64,8 +67,10 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
         window.confirmationResult.confirm(code).then((result) => {
-            const user = result.user;
+            const user = result.user
             dispatch(setUser(user))
+            // if (phoneNumber)
+            //     addUser(name, phoneNumber, user.uid)
             window.location.href = redirectUrl ?? '/' // code translation :  redirectUrl??'/' =  redirectUrl?redirectUrl:'/'
         }).catch((error: FirebaseError) => {
             dispatch(setUserError(error))
@@ -83,3 +88,11 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
 
     return { sendOtp, verifyOtp, logout }
 }
+
+// export async function addUser(name: string, phone: number, id: string) {
+//     const ref = doc(db, "users", id)
+//     await setDoc(ref, {
+//         name: name,
+//         phoneNumber: phone
+//     });
+// }

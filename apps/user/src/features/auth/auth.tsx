@@ -16,7 +16,7 @@ export interface AuthProps { }
 export function Auth(props: AuthProps) {
 
   const { user, loading, error, step } = useSelector((state: RootState) => state.User)
-  const { sendOtp, verifyOtp, logout } = usePhoneAuth(app, '/home')
+  const { sendOtp, verifyOtp, logout } = usePhoneAuth(app, '/')
   const dispatch = useDispatch()
 
   const currentComponent = () => {
