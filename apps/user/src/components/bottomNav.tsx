@@ -11,7 +11,8 @@ import { RootState } from '../redux/store/store';
 export const BottomNav = () => {
 
     const navigate = useNavigate()
-    const { shopId, branchId, menuId } = useParams()
+    const { shopId } = useParams()
+    const { selectedBranch, selectedMenu } = useSelector((state: RootState) => state.appSlice)
     const { cart } = useSelector((state: RootState) => state.appSlice)
 
     const iconButtonStyles: React.CSSProperties = {
@@ -40,13 +41,13 @@ export const BottomNav = () => {
         <div style={bottomNavStyles}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div>
-                    <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/${branchId}/${menuId}/feedback`)}>
+                    <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/feedback`)}>
                         <div>
                             <ThumbsUpDownOutlinedIcon />
                             <p style={{ margin: 0 }}>Feedback</p>
                         </div>
                     </IconButton>
-                    <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/${branchId}/${menuId}/search`)}>
+                    <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/search`)}>
                         <div>
                             <SearchOutlinedIcon />
                             <p style={{ margin: 0 }}>Search</p>
@@ -54,7 +55,7 @@ export const BottomNav = () => {
                     </IconButton>
                 </div>
                 <div>
-                    <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/${branchId}/${menuId}/cart`)}>
+                    <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/cart`)}>
                         <div>
                             <Badge badgeContent={cart.length} color={'primary'}>
                                 <ShoppingCartOutlinedIcon />
@@ -62,7 +63,7 @@ export const BottomNav = () => {
                             <p style={{ margin: 0 }}>Cart</p>
                         </div>
                     </IconButton>
-                    <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/${branchId}/${menuId}/payment`)}>
+                    <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/payment`)}>
                         <div>
                             <PaymentOutlinedIcon />
                             <p style={{ margin: 0 }}>Payment</p>
@@ -71,7 +72,8 @@ export const BottomNav = () => {
                 </div>
             </div>
 
-            <IconButton sx={{ ...iconButtonStyles, ...menuButton }} onClick={() => navigate(`/${shopId}/${branchId}/${menuId}`)}>
+            <IconButton sx={{ ...iconButtonStyles, ...menuButton }}
+                onClick={() => navigate(`/${shopId}/${selectedBranch?.id}/${selectedMenu?.id}`)}>
                 <div>
                     <PowerSettingsNewOutlinedIcon />
                     <p style={{ margin: "10px 0px" }}>Menu</p>

@@ -25,6 +25,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store/store';
 import { getAuth, signOut } from 'firebase/auth';
+import { Alert } from '@mui/material';
 
 const drawerWidth = 200;
 
@@ -41,8 +42,9 @@ export default function DrawerLeft() {
 
   const theme = useTheme();
   const navigate = useNavigate()
-  const { shopId, branchId } = useParams()
-  // const { selectedShopId, selectedBranch } = useSelector((state: RootState) => state.appSlice)
+  const { shopId } = useParams()
+  const { selectedBranch } = useSelector((state: RootState) => state.appSlice)
+  const [selectAlert, setSelectAlert] = React.useState(false)
 
   const [open, setOpen] = React.useState(false);
 
@@ -65,35 +67,40 @@ export default function DrawerLeft() {
       icon: <ArticleOutlinedIcon />,
       listName: "Menu Page",
       clickFunc: () => {
-        navigate(`/${shopId}/${branchId}`)
+        if (selectedBranch) {
+          setSelectAlert(false)
+          navigate(`/${shopId}/${selectedBranch.id}`)
+        } else {
+          setSelectAlert(true)
+        }
       }
     },
     {
       icon: <PaymentIcon />,
       listName: "Payment",
       clickFunc: () => {
-
+        navigate(`/${shopId}/payment`)
       }
     },
     {
       icon: <ShieldOutlinedIcon />,
       listName: "Terms & Condition",
       clickFunc: () => {
-
+        // navigate(`/${shopId}/`)
       }
     },
     {
       icon: <LockOutlinedIcon />,
       listName: "Privacy Policy",
       clickFunc: () => {
-
+        // navigate(`/${shopId}/`)
       }
     },
     {
       icon: <InfoOutlinedIcon />,
       listName: "About Onmenu",
       clickFunc: () => {
-
+        // navigate(`/${shopId}/`)
       }
     },
     {
@@ -152,6 +159,8 @@ export default function DrawerLeft() {
         </DrawerHeader>
 
         <Divider />
+
+        {(selectAlert && !selectedBranch) && <Alert severity="warning">Please select the branch!</Alert>}
 
         <List>
           {listItems.map(item => (

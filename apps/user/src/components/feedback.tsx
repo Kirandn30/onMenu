@@ -10,6 +10,11 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form';
 import { BottomNav } from './bottomNav';
+import { addDoc, collection } from 'firebase/firestore';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store/store';
+import { db } from '../configs/firebaseConfig';
+import { useParams } from 'react-router-dom';
 
 type Props = {}
 
@@ -19,15 +24,30 @@ const schema = yup.object({
 
 export const Feedback = (props: Props) => {
 
+    const { shopId } = useParams()
+    const { user } = useSelector((state: RootState) => state.User)
     const [experienceRating, setExperienceRating] = useState<number>()
     const { register, handleSubmit, formState: { errors } } = useForm({ resolver: yupResolver(schema) });
 
-    const onsubmit = (data: any)=>{
+    const onsubmit = (data: any) => {
         console.log({
             ...data,
             experienceRating
         });
+        addFeedback(data)
         
+    }
+
+    async function addFeedback(feedback: any) {
+        if (shopId){
+            const docRef = await addDoc(collection(db, "shops", shopId, "feedbacks"), {
+                ...feedback,
+                name: user?.displayName,
+                phoneNumber: user?.phoneNumber,
+                experienceRating,
+            })
+        console.log("Document written with ID: ", docRef.id);
+        }
     }
 
     const StyledRating = styled(Rating)(({ theme }) => ({
@@ -86,13 +106,13 @@ export const Feedback = (props: Props) => {
                     highlightSelectedOnly
                 />
 
-                <div>
+                {/* <div>
                     <Typography variant='body2'>Items in the cart: </Typography>
-                </div>
+                </div> */}
 
                 <InputField placeholder='Please write your feedback'
                     fullWidth multiline rows={3}
-                forminput={{ ...register("feedback") }}
+                    forminput={{ ...register("feedback") }}
                 // helperText={errors['menuName']?.message}
                 // error={Boolean(errors['menuName'])}
                 />

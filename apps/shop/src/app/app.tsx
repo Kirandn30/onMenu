@@ -13,7 +13,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Alert, Snackbar, Typography } from '@mui/material';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { setselectedShop, Setshops } from '../redux/shops';
-import { Header } from '../components/header';
 import { NewHeader } from '../components/newHeader';
 import { Service } from '../features/auth/navOptions/service/servicesDashboard';
 import { Activecustomers } from '../features/auth/navOptions/activeCx';
@@ -88,16 +87,15 @@ export function App() {
             ) : (
               < NewHeader>
                 <Routes>
-
-                  <Route path='/:shopid/:branchid/activecustomers' element={<Activecustomers />} />
-                  <Route path='/:shopid/:branchid/analytics' element={<Analytics />} />
-                  <Route path='/:shopid/:branchid/bin' element={<Bin />} />
-                  <Route path='/:shopid/:branchid/customerslist' element={<CustomersList />} />
-                  <Route path='/:shopid/:branchid/instructions' element={<Instructions />} />
-                  <Route path='/:shopid/:branchid/payment' element={<Payments />} />
-                  <Route path='/:shopid/:branchid/loyalty' element={<Loyalty />} />
-                  <Route path='/:shopid/:branchid/alerts' element={<Servicealert />} />
-                  <Route path='/:shopid/:branchid/settings' element={<Settings />} />
+                  <Route path='/:shopid/activecustomers' element={<Activecustomers />} />
+                  <Route path='/:shopid/analytics' element={<Analytics />} />
+                  <Route path='/:shopid/bin' element={<Bin />} />
+                  <Route path='/:shopid/customerslist' element={<CustomersList />} />
+                  <Route path='/:shopid/instructions' element={<Instructions />} />
+                  <Route path='/:shopid/payment' element={<Payments />} />
+                  <Route path='/:shopid/loyalty' element={<Loyalty />} />
+                  <Route path='/:shopid/alerts' element={<Servicealert />} />
+                  <Route path='/:shopid/settings' element={<Settings />} />
                   {/* <Route path='/:shopid/:branchid/:menuId/:categoryId' element={<Service />} /> */}
                   <Route path='/:shopid/:branchid/:menuId' element={<Service />} />
                   <Route path='/:shopid/:branchid/:menuId/:serviceId' element={<Service />} />

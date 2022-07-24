@@ -97,6 +97,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 export function NewHeader({ children }: { children: React.ReactNode }) {
+
     const theme = useTheme();
     const [open, setOpen] = React.useState(false)
     const { logOut } = useEmailPassword({ app })
@@ -108,8 +109,67 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
     const navigate = useNavigate()
     const handleDrawerOpen = () => {
         setOpen(true);
-    };
+    }
+
+    const navData = [
+        {
+            icon: <DocumentScannerOutlined />,
+            name: 'Menu Page',
+            route: `${selectedBranch?.id}/menu`
+        },
+        {
+            icon: <PeopleAltOutlined />,
+            name: 'Active Customers',
+            route: "activecustomers"
+        },
+        {
+            icon: <FormatListBulletedOutlined />,
+            name: 'Customer List',
+            route: "customerslist"
+        },
+        {
+            icon: <LoyaltyOutlined />,
+            name: 'Loyalty Alert',
+            route: "loyalty"
+        },
+        {
+            icon: <WarningAmberOutlined />,
+            name: "Service Alert",
+            route: "alerts"
+        },
+        {
+            icon: <AssessmentOutlined />,
+            name: "Analytics",
+            route: "analytics"
+        },
+        {
+            icon: <AccountBalanceOutlined />,
+            name: "Payments",
+            route: "payment"
+        },
+        {
+            icon: <SettingsOutlined />,
+            name: "Settings",
+            route: "settings"
+        },
+        {
+            icon: <InfoOutlined />,
+            name: "Instructions",
+            route: "instructions"
+        },
+        {
+            icon: <DeleteOutlined />,
+            name: "Bin",
+            route: "bin"
+        },
+        {
+            icon: <LoginOutlined />,
+            name: "Logout",
+        }]
+
+
     return (
+
         <Box sx={{ display: 'flex' }}>
             <Simplemodal open={modal} onClose={() => setModal(false)}>
                 <div style={{ marginTop: "20px", display: "grid", gap: "30px" }}>
@@ -198,7 +258,7 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
                             if (data.name === "Logout") {
                                 setModal(true)
                             } else {
-                                navigate(`/${selectedShop?.id}/${selectedBranch?.id}/${data.route}`)
+                                navigate(`/${selectedShop?.id}/${data.route}`)
                             }
                         }} >
                             <ListItemButton
@@ -233,58 +293,3 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
     );
 }
 
-const navData = [
-    {
-        icon: <DocumentScannerOutlined />,
-        name: 'Menu Page',
-        route: "menu"
-    },
-    {
-        icon: <PeopleAltOutlined />,
-        name: 'Active Customers',
-        route: "activecustomers"
-    },
-    {
-        icon: <FormatListBulletedOutlined />,
-        name: 'Customer List',
-        route: "customerslist"
-    },
-    {
-        icon: <LoyaltyOutlined />,
-        name: 'Loyalty Alert',
-        route: "loyalty"
-    },
-    {
-        icon: <WarningAmberOutlined />,
-        name: "Service Alert",
-        route: "alerts"
-    },
-    {
-        icon: <AssessmentOutlined />,
-        name: "Analytics",
-        route: "analytics"
-    },
-    {
-        icon: <AccountBalanceOutlined />,
-        name: "Payments",
-        route: "payment"
-    },
-    {
-        icon: <SettingsOutlined />,
-        name: "Settings",
-        route: "settings"
-    },
-    {
-        icon: <InfoOutlined />,
-        name: "Instructions",
-        route: "instructions"
-    },
-    {
-        icon: <DeleteOutlined />,
-        name: "Bin",
-        route: "bin"
-    },
-    {
-        icon: <LoginOutlined />,
-        name: "Logout",
-    }]

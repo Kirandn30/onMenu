@@ -1,6 +1,6 @@
 import { logEvent } from 'firebase/analytics';
 import { FirebaseApp, FirebaseError } from 'firebase/app'
-import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut } from 'firebase/auth';
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,9 +14,6 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
     const auth = getAuth(app);
     const dispatch = useDispatch()
     const { name, phoneNumber } = useSelector((state: RootState) => state.User)
-    // const [step, setStep] = useState<stepType>('phone')
-    // console.log(step);
-
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
@@ -69,9 +66,11 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
         window.confirmationResult.confirm(code).then((result) => {
             const user = result.user
             dispatch(setUser(user))
-            // if (phoneNumber)
-            //     addUser(name, phoneNumber, user.uid)
-            window.location.href = redirectUrl ?? '/' // code translation :  redirectUrl??'/' =  redirectUrl?redirectUrl:'/'
+            if (auth.currentUser)
+                updateProfile(auth.currentUser, {
+                    displayName: name
+                })
+            // window.location.href = redirectUrl ?? '/' // code translation :  redirectUrl??'/' =  redirectUrl?redirectUrl:'/'
         }).catch((error: FirebaseError) => {
             dispatch(setUserError(error))
         });

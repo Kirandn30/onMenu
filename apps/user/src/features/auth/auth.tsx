@@ -21,7 +21,6 @@ export function Auth(props: AuthProps) {
 
   const currentComponent = () => {
     switch (step) {
-
       case 'phone':
         return <GetPhoneNumber sendOtp={sendOtp} />
       case 'otp':

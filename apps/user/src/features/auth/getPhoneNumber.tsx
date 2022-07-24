@@ -30,7 +30,7 @@ export const GetPhoneNumber = ({ sendOtp }: Props) => {
 
   const onSubmit = (data: Inputs) => {
     dispatch(setName(data.fullName))   //line is added to get username
-    dispatch(setName(data.phoneNumber))
+    // dispatch(setName(data.phoneNumber))
     sendOtp(`+91${data.phoneNumber}`)
   }
 

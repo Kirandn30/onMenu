@@ -1,7 +1,9 @@
 import { Button } from '@mui/material'
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { db } from '../configs/firebaseConfig'
 import InputField from '../input-field/input-field'
 import { RootState } from '../redux/store/store'
 import { BottomNav } from './bottomNav'
@@ -11,19 +13,19 @@ type Props = {}
 export const Payment = (props: Props) => {
 
     const { shopId } = useParams()
-    const { totalAmount } = useSelector((state: RootState) => state.appSlice)
+    const { user } = useSelector((state: RootState) => state.User)
+    const { selectedBranch, totalAmount } = useSelector((state: RootState) => state.appSlice)
     const [orderSuccess, setOrderSuccess] = useState<any>(null);
 
-    useEffect(()=>{
-        setTimeout(()=>{
-            setOrderSuccess(null) 
+    useEffect(() => {
+        setTimeout(() => {
+            setOrderSuccess(null)
         }, 5000)
     }, [orderSuccess])
 
     const [prefill, setPrefill] = useState<any>({
-        name: "CJ",
-        email: "abc@mail.com",
-        contact: "7899554466",
+        name: user?.displayName,
+        contact: user?.phoneNumber,
         amount: totalAmount ? totalAmount : '',
     })
 
@@ -48,7 +50,7 @@ export const Payment = (props: Props) => {
         //   }
         const options: any = {
             key: "rzp_test_fY8QF3EzxnyDs7",
-            handler: function (response: any) {
+            handler: async function (response: any) {
                 // success function
                 setOrderSuccess({
                     status: 'success',
@@ -61,20 +63,24 @@ export const Payment = (props: Props) => {
                     ...paymentResult,
                     status: 'success',
                     paymentStatus: 'Success',
-                    // timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    timeStamp: serverTimestamp(),
                     ...prefill,
                     shopId: shopId,
+                    id: response.razorpay_payment_id
                 }
 
-                // firestore.collection('payment').add(result)
+                if (shopId) {
+                    const docRef = await addDoc(collection(db, "shops", shopId, "payments"), result)
+                    console.log("Document written with ID: ", docRef.id);
+                }
 
                 setPrefill({
                     amount: '',
                 })
             },
             prefill: prefill,
-            description: "payment to restaurant",
-            name: "shop Name",
+            description: "payment to shop",
+            name: selectedBranch? selectedBranch.branchName + " branch": "Shop name",
             "payment-capture": true,
             amount: parseFloat(prefill.amount) * 100,
         }
@@ -91,7 +97,7 @@ export const Payment = (props: Props) => {
                 ...response.metadata,
                 status: 'failed',
                 paymentStatus: 'failure',
-                //   timeStamp:firebase.firestore.FieldValue.serverTimestamp(),
+                timeStamp: serverTimestamp(),
                 shopId: shopId,
             }
             // firestore.collection('payment').add(result)
@@ -108,9 +114,9 @@ export const Payment = (props: Props) => {
                 onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
                     setPrefill({ ...prefill, amount: e.target.value })} />
 
-            <Button style={{ margin: "10px"}} variant='contained' onClick={loadRazorpay}>Pay Now</Button>
+            <Button style={{ margin: "10px" }} variant='contained' onClick={loadRazorpay}>Pay Now</Button>
 
-            {orderSuccess && 
+            {orderSuccess &&
                 <div>
                     <p>{orderSuccess.status}</p>
                     <p>{orderSuccess.id}</p>
