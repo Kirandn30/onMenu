@@ -20,7 +20,7 @@ export const Servicecard = () => {
     const [editMode, setEditMode] = useState(false)
     const [serviceToBeEdited, setServiceToBeEdited] = useState<serviceType | null>(null)
     const [orderChanged, setOrderChanged] = useState<boolean>(false)
-    const [filteredServices, setFilteredServices] = useState<Array<serviceType>>([])
+    const [filteredServices, setFilteredServices] = useState<Array<serviceType> | null>([])
 
     const transition = useTransition("a", {
         from: { x: 0, y: 100, opacity: 0 },
@@ -56,7 +56,7 @@ export const Servicecard = () => {
     async function updateIndex() {
         try {
             const batch = writeBatch(db)
-            if (selectedShop) {
+            if (selectedShop && filteredServices) {
                 filteredServices.forEach(async s => {
                     const branchesRef = doc(db, "shops", selectedShop.id, "services", s.id);
                     batch.update(branchesRef, {
@@ -76,6 +76,8 @@ export const Servicecard = () => {
         if (selectedMenu) {
             const filtered = services.filter((fs) => fs.menuId == selectedMenu.id)
             setFilteredServices(filtered)
+        } else {
+            setFilteredServices(null)
         }
     }, [services, selectedMenu, selectedBranch])
 
@@ -89,6 +91,7 @@ export const Servicecard = () => {
         if (!destination) return
         if (destination.index === source.index) return
 
+        if(!filteredServices) return
         const finalResult = Array.from(filteredServices)  // we are copying the branches to a new variable for manipulation.
         const [removed] = finalResult.splice(source.index, 1)
         finalResult.splice(destination.index, 0, removed)
@@ -113,7 +116,7 @@ export const Servicecard = () => {
                                     {(provided) => (
                                         <div ref={provided.innerRef} {...provided.droppableProps}>
 
-                                            {filteredServices.map((s: serviceType) => (
+                                            {filteredServices && filteredServices.map((s: serviceType) => (
 
                                                 <Draggable key={s.id} draggableId={s.id} index={s.index}>
                                                     {(provided, snapshot) => (

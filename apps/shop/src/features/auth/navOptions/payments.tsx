@@ -17,7 +17,6 @@ export const Payments = () => {
             const q = query(ref, orderBy("timeStamp"));
             const querySnapshot = await getDocs(q);
             const result = querySnapshot.docs.map(doc => doc.data())
-            result.map(r=> console.log(r["timeStamp"].toDate().toLocaleString()))
             setPaymentsDetails(result)
         }
     }

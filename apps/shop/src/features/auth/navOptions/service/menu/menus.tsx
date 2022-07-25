@@ -11,7 +11,6 @@ import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautif
 import { Button } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom'
 import _ from "lodash"
-import { setselectedShop } from 'apps/shop/src/redux/shops'
 
 export const MenuItems = () => {
 

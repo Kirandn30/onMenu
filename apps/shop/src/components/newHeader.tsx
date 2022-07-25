@@ -123,11 +123,6 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
             route: "activecustomers"
         },
         {
-            icon: <FormatListBulletedOutlined />,
-            name: 'Customer List',
-            route: "customerslist"
-        },
-        {
             icon: <LoyaltyOutlined />,
             name: 'Loyalty Alert',
             route: "loyalty"

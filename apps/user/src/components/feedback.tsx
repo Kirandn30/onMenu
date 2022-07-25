@@ -10,43 +10,55 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form';
 import { BottomNav } from './bottomNav';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store/store';
 import { db } from '../configs/firebaseConfig';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { setSelectedBranch } from '../redux/appSlice';
 
 type Props = {}
 
 const schema = yup.object({
-    feedback: yup.string()
+    feedback: yup.string().required("Please enter the feedback")
 })
 
 export const Feedback = (props: Props) => {
 
+    const navigate = useNavigate()
     const { shopId } = useParams()
     const { user } = useSelector((state: RootState) => state.User)
+    const { selectedBranch } = useSelector((state: RootState) => state.appSlice)
     const [experienceRating, setExperienceRating] = useState<number>()
-    const { register, handleSubmit, formState: { errors } } = useForm({ resolver: yupResolver(schema) });
+    const { register, handleSubmit, setError, clearErrors, formState: { errors } } = useForm({ resolver: yupResolver(schema) });
 
     const onsubmit = (data: any) => {
         console.log({
             ...data,
             experienceRating
         });
+
+        if (!experienceRating) {
+            setError("rating", { message: "Please select one", type: 'required' })
+            return
+        } else {
+            clearErrors("rating")
+        }
+
         addFeedback(data)
-        
     }
 
     async function addFeedback(feedback: any) {
-        if (shopId){
+        if (shopId) {
             const docRef = await addDoc(collection(db, "shops", shopId, "feedbacks"), {
                 ...feedback,
                 name: user?.displayName,
                 phoneNumber: user?.phoneNumber,
                 experienceRating,
+                timeStamp: serverTimestamp(),
             })
-        console.log("Document written with ID: ", docRef.id);
+            console.log("Document written with ID: ", docRef.id);
+            navigate(`/${shopId}/${selectedBranch?.id}`)
         }
     }
 
@@ -106,9 +118,9 @@ export const Feedback = (props: Props) => {
                     highlightSelectedOnly
                 />
 
-                {/* <div>
-                    <Typography variant='body2'>Items in the cart: </Typography>
-                </div> */}
+                <Typography color={'error'} >
+                    {errors['rating']?.message}
+                </Typography>
 
                 <InputField placeholder='Please write your feedback'
                     fullWidth multiline rows={3}
