@@ -18,7 +18,6 @@ import { Service } from '../features/auth/navOptions/service/servicesDashboard';
 import { Activecustomers } from '../features/auth/navOptions/activeCx';
 import { Analytics } from '../features/auth/navOptions/analytics';
 import { Bin } from '../features/auth/navOptions/bin';
-import { CustomersList } from '../features/auth/navOptions/customersList';
 import { Instructions } from '../features/auth/navOptions/instructions';
 import { Payments } from '../features/auth/navOptions/payments';
 import { Loyalty } from '../features/auth/navOptions/loyalty';
@@ -90,7 +89,6 @@ export function App() {
                   <Route path='/:shopid/activecustomers' element={<Activecustomers />} />
                   <Route path='/:shopid/analytics' element={<Analytics />} />
                   <Route path='/:shopid/bin' element={<Bin />} />
-                  <Route path='/:shopid/customerslist' element={<CustomersList />} />
                   <Route path='/:shopid/instructions' element={<Instructions />} />
                   <Route path='/:shopid/payment' element={<Payments />} />
                   <Route path='/:shopid/loyalty' element={<Loyalty />} />

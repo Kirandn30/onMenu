@@ -17,17 +17,26 @@ import { Feedback } from '../components/feedback';
 import { Cart } from '../components/cart';
 import { Search } from '../components/search';
 import { Payment } from '../components/payment';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 
 
 export function App() {
   const dispatch = useDispatch()
   const { loading, user, name, phoneNumber } = useSelector((state: RootState) => state.User)
-  
+
+  // const clickFunc= () => {
+  //   const auth = getAuth();
+  //   signOut(auth).then(() => {
+  //     // Sign-out successful.
+  //   }).catch((error) => {
+  //     // An error happened.
+  //   });
+  // }
+
+  // clickFunc()
+
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
-      // console.log(cred);
-      
       dispatch(setUser(cred))
     })
 
@@ -48,11 +57,15 @@ export function App() {
 
       if (docSnap.exists()) {
         console.log("user exists")
+        updateDoc(doc(db, "users", id), {
+          timeStamp: serverTimestamp(),
+        })
       } else {
         console.log("User dosen't exists");
         setDoc(doc(db, "users", id), {
           name,
           phoneNumber,
+          timeStamp: serverTimestamp(),
         })
       }
 

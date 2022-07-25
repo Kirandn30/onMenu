@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 import { Login } from '../login'
 import _ from "lodash"
+import { v4 as uuidv4 } from 'uuid';
 
 const schema = yup.object({
     shopName: yup.string().min(4, "Minimum 4 characters is required").required("Shop name is required"),
@@ -49,11 +50,16 @@ export const Settings = () => {
     const onsubmit = async (data: any) => {
 
         try {
-            const targetData = {
+            let targetData = {
                 ...data,
                 logo,
                 timings: selectedTiming,
             }
+
+            // if (data.shopName !== selectedShop?.shopName) {
+            //     const id = `${data.shopName.replace(" ", "-")}-${uuidv4()}`
+            //     targetData = {...targetData, id}
+            // }
 
             if (selectedShop) {
                 const ref = doc(db, `shops/${selectedShop.id}`)
@@ -237,7 +243,7 @@ export const Settings = () => {
                             />
                         </div>
                     </div>
-                    
+
                     <div>
                         {days.map((day) => (
                             <React.Fragment key={day} >

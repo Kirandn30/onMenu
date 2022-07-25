@@ -110,6 +110,7 @@ export default function DrawerLeft() {
         const auth = getAuth();
         signOut(auth).then(() => {
           // Sign-out successful.
+          navigate("/")
         }).catch((error) => {
           // An error happened.
         });

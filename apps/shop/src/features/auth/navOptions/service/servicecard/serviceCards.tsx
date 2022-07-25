@@ -14,7 +14,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 export const Servicecard = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { serviceId } = useParams()
+    const { menuId, serviceId } = useParams()
     const { selectedShop } = useSelector((state: RootState) => state.shop)
     const { services, selectedBranch, selectedMenu } = useSelector((state: RootState) => state.branches)
     const [editMode, setEditMode] = useState(false)
@@ -47,9 +47,6 @@ export const Servicecard = () => {
                         navigate(`/${selectedShop.id}/${selectedBranch.id}/${selectedMenu.id}/${defaultService['id']}`)
                     }
                 }
-
-                const filtered = services.filter((fs) => fs.menuId == selectedMenu.id)
-                setFilteredServices(filtered)
             }
         } catch (error) {
             console.log(error);
@@ -60,7 +57,7 @@ export const Servicecard = () => {
         try {
             const batch = writeBatch(db)
             if (selectedShop) {
-                services.forEach(async s => {
+                filteredServices.forEach(async s => {
                     const branchesRef = doc(db, "shops", selectedShop.id, "services", s.id);
                     batch.update(branchesRef, {
                         index: s.index
@@ -74,6 +71,14 @@ export const Servicecard = () => {
         }
     }
 
+    //To filter services
+    useEffect(() => {
+        if (selectedMenu) {
+            const filtered = services.filter((fs) => fs.menuId == selectedMenu.id)
+            setFilteredServices(filtered)
+        }
+    }, [services, selectedMenu, selectedBranch])
+
     useEffect(() => {
         getServices()
     }, [editMode, selectedShop, selectedBranch, selectedMenu])
@@ -84,12 +89,14 @@ export const Servicecard = () => {
         if (!destination) return
         if (destination.index === source.index) return
 
-        const finalResult = Array.from(services)  // we are copying the branches to a new variable for manipulation.
+        const finalResult = Array.from(filteredServices)  // we are copying the branches to a new variable for manipulation.
         const [removed] = finalResult.splice(source.index, 1)
         finalResult.splice(destination.index, 0, removed)
         const newData = finalResult.map((fs, index) => ({ ...fs, index }))
-        dispatch(setServices(newData))
+        setFilteredServices(newData)
         setOrderChanged(true)
+        // const toUpdate = services.filter((fs) => fs.menuId !== selectedMenu?.id)
+        dispatch(setServices({ ...services, filteredServices }))
     }
 
     return (

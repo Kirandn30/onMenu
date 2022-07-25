@@ -80,7 +80,7 @@ export const MenuForm = ({ editMode, setEditMode, menuToBeEdited }: MenuForm) =>
                     status: 'created',
                     shopId: selectedShop?.id,
                     branchId: selectedBranch?.id,
-                    index: menu.length
+                    index: menu.filter((fs)=> fs.branchId === selectedBranch?.id).length
                 }
                 if (selectedShop)
                     await setDoc(doc(db, `shops/${selectedShop.id}/menu`, id), targetData)

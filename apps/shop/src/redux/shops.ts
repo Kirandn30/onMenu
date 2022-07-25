@@ -37,3 +37,13 @@ export interface shopstype {
     role: string;
     id: string;
 }
+
+export interface paymentsType {
+    id: string,
+    name: string,
+    contact: string,
+    status: string,
+    timeStamp: any,
+    amount: string,
+    by: string,
+}

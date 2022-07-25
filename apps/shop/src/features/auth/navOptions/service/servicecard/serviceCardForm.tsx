@@ -84,7 +84,7 @@ export const ServiceCardForm = ({ editMode, setEditMode, serviceToBeEdited }: Se
                     serviceImage: serviceCardImage,
                     options: options,
                     recommended: recommended,
-                    index: services.length
+                    index: services.filter((fs)=> fs.menuId === selectedMenu?.id).length
                 }
 
                 if (selectedShop) {

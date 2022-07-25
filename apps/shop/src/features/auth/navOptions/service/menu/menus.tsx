@@ -11,6 +11,7 @@ import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautif
 import { Button } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom'
 import _ from "lodash"
+import { setselectedShop } from 'apps/shop/src/redux/shops'
 
 export const MenuItems = () => {
 
@@ -38,16 +39,7 @@ export const MenuItems = () => {
             const result = querySnapshot.docs.map(doc => doc.data())
 
             if (result.length > 0) {
-                const defaultMenu = menuId ? result.find((m, index) => m['id'] === menuId) : result[0]
                 dispatch(setMenu(result)) // all the menu
-
-                if (!defaultMenu) {
-                    dispatch(setSelectedMenu(result[0]))
-                    navigate(`/${selectedShop.id}/${selectedBranch.id}/${result[0]['id']}`)
-                } else {
-                    dispatch(setSelectedMenu(defaultMenu))
-                    navigate(`/${selectedShop.id}/${selectedBranch.id}/${defaultMenu['id']}`)
-                }
             }
         }
     }
@@ -70,6 +62,27 @@ export const MenuItems = () => {
         }
     }
 
+    //To filter menu
+    useEffect(() => {
+        if (selectedShop && selectedBranch) {
+            const filtered = menu.filter((fm) => fm.branchId == selectedBranch.id)
+            if (filtered.length > 0) {
+                const defaultMenu = menuId ? filtered.find((m, index) => m['id'] === menuId) : filtered[0]
+                if (!defaultMenu) {
+                    dispatch(setSelectedMenu(filtered[0]))
+                    navigate(`/${selectedShop.id}/${selectedBranch.id}/${filtered[0]['id']}`)
+                } else {
+                    dispatch(setSelectedMenu(defaultMenu))
+                    navigate(`/${selectedShop.id}/${selectedBranch.id}/${defaultMenu['id']}`)
+                }
+            } else {
+                dispatch(setSelectedMenu(null))
+                navigate(`/${selectedShop.id}/${selectedBranch.id}`)
+            }
+            setFilteredMenu(filtered)
+        }
+    }, [menu, selectedBranch])
+
     useEffect(() => {
         getMenu()
     }, [editMode, selectedBranch, selectedShop])
@@ -85,13 +98,13 @@ export const MenuItems = () => {
         if (!destination) return
         if (destination.index === source.index) return
 
-        const finalResult = Array.from(menu)  // we are copying the branches to a new variable for manipulation.
+        const finalResult = Array.from(filteredMenu)  // we are copying the branches to a new variable for manipulation.
         const [removed] = finalResult.splice(source.index, 1)
         finalResult.splice(destination.index, 0, removed)
         const newData = finalResult.map((fs, index) => ({ ...fs, index }))
-
-        dispatch(setMenu(newData))
+        setFilteredMenu(newData)
         setOrderChanged(true)
+        dispatch(setMenu({ ...menu, newData }))
     }
 
     return (
@@ -107,7 +120,7 @@ export const MenuItems = () => {
                                     {(provided) => (
                                         <div ref={provided.innerRef} {...provided.droppableProps}>
 
-                                            {menu.map(m => (
+                                            {filteredMenu.map(m => (
 
                                                 <Draggable key={m.id} draggableId={m.id} index={m.index}>
                                                     {(provided, snapshot) => (
