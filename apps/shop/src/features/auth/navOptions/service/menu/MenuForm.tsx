@@ -47,7 +47,7 @@ export const MenuForm = ({ editMode, setEditMode, menuToBeEdited }: MenuForm) =>
             if (menuToBeEdited) {
                 setValue("menuName", menuToBeEdited.menuName)
                 setMenuImage(menuToBeEdited?.img)
-                const timings = menuToBeEdited.timings.map(({ day, from, to }) => ({ day, from: from.toDate(), to: to.toDate() }))
+                const timings = menuToBeEdited.timings.map(({ day, from, to }) => ({ day, from: new Date(from), to: new Date(to) }))
                 setSelectedTiming(timings)
             }
         }
@@ -80,13 +80,13 @@ export const MenuForm = ({ editMode, setEditMode, menuToBeEdited }: MenuForm) =>
                     status: 'created',
                     shopId: selectedShop?.id,
                     branchId: selectedBranch?.id,
-                    index: menu.filter((fs)=> fs.branchId === selectedBranch?.id).length
+                    index:menu.length
                 }
                 if (selectedShop)
                     await setDoc(doc(db, `shops/${selectedShop.id}/menu`, id), targetData)
                 dispatch(setMenu([...menu, targetData]))
                 console.log(targetData);
-                
+
             } catch (error) {
                 console.log(error)
             }

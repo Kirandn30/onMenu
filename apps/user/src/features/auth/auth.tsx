@@ -24,8 +24,7 @@ export function Auth(props: AuthProps) {
       case 'phone':
         return <GetPhoneNumber sendOtp={sendOtp} />
       case 'otp':
-        return <VerifyOtp verifyOtp={verifyOtp} />
-
+        return <VerifyOtp verifyOtp={verifyOtp} sendOtp={sendOtp} />
       default:
         return <>unknown error</>;
     }

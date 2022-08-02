@@ -9,12 +9,13 @@ import Lottie from "lottie-react";
 import lottieOtp from "./lottieOtp.json";
 
 type Props = {
-  verifyOtp: (otp: string) => void
+  verifyOtp: (otp: string) => void,
+  sendOtp: (phone: string) => void,
 }
 
 
 // eslint-disable-next-line no-empty-pattern
-export default function VerifyOtp({ verifyOtp }: Props) {
+export default function VerifyOtp({ verifyOtp, sendOtp }: Props) {
   const { phoneNumber, error } = useSelector((state: RootState) => state.User)
   const [otp, setOtp] = useState<string | undefined>(undefined)
 
@@ -46,7 +47,7 @@ export default function VerifyOtp({ verifyOtp }: Props) {
         />
         {error && <Typography color="red" variant='caption'>Incorrect otp! Please enter correct OTP</Typography>}
       </div>
-      <div onClick={() => console.log("resend")}><Typography color="Highlight" variant='caption'>Resend OTP?</Typography></div>
+      <div onClick={() => sendOtp(`${phoneNumber}`) }><Typography color="Highlight" variant='caption'>Resend OTP?</Typography></div>
       <Button variant='contained' onClick={() => otp && verifyOtp(otp)}>Verify</Button>
     </div>
   )

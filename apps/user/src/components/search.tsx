@@ -15,30 +15,29 @@ type Props = {}
 export const Search = (props: Props) => {
 
     const dispatch = useDispatch()
-    // const { menuId } = useParams()
-    const { shopId, branchId, menuId } = useParams()
-    const { services, selectedBranch } = useSelector((state: RootState) => state.appSlice)
-    // const { services } = useSelector((state: RootState) => state.appSlice)
+    const { shopId, branchId } = useParams()
+    const { services, selectedBranch, selectedMenu } = useSelector((state: RootState) => state.appSlice)
     const [searchResults, setSearchResults] = useState<Array<serviceType>>([])
     const [viewDetails, setViewDetails] = useState(false)
-    
+    const [popUpService, setPopUpService] = useState<serviceType | null>(null)
 
     const searchService = (name: string) => {
-        const filtered = services.filter(fs => fs.menuId === menuId)
+        const filtered = services.filter(fs => fs.menuId === selectedMenu?.id)
         const result = filtered.filter(r =>
             r.serviceName.toLowerCase().search(name.toLowerCase()) >= 0)
         setSearchResults(result)
     }
 
     const handleClick = (service: serviceType) => {
-        dispatch(setSelectedService(service))
+        // dispatch(setSelectedService(service))
+        setPopUpService(service)
         setViewDetails(true)
     }
 
     async function getServices() {
-        if (shopId && menuId && branchId) {
+        if (shopId && selectedMenu && branchId) {
             const ref = collection(db, "shops", shopId, "services")
-            const q = query(ref, where("menuId", "==", menuId), orderBy("index"));
+            const q = query(ref, where("menuId", "==", selectedMenu.id), where("status", "==", "published"), orderBy("index"));
             const querySnapshot = await getDocs(q);
             const result = querySnapshot.docs.map(doc => doc.data())
             dispatch(setServices(result))
@@ -58,7 +57,7 @@ export const Search = (props: Props) => {
 
     useEffect(() => {
         getServices()
-    }, [shopId, menuId, branchId])
+    }, [shopId, selectedMenu?.id, selectedBranch?.id, branchId])
 
     const serviceCardStyles: React.CSSProperties = {
         display: "grid",
@@ -107,7 +106,7 @@ export const Search = (props: Props) => {
 
             <BottomNav />
 
-            <ServiceCardPopUp setViewDetails={setViewDetails} viewDetails={viewDetails} />
+            <ServiceCardPopUp setViewDetails={setViewDetails} viewDetails={viewDetails} popUpService={popUpService} />
 
         </div>
     )

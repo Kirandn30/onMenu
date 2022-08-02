@@ -2,7 +2,7 @@ import { Button, Typography } from '@mui/material'
 import { collection, doc, getDoc, getDocs, orderBy, query, where } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { db } from '../configs/firebaseConfig'
 import { serviceType, setSelectedBranch, setSelectedService, setServices } from '../redux/appSlice'
 import { RootState } from '../redux/store/store'
@@ -44,17 +44,20 @@ export const ServicesComponent = () => {
     const more = (
         <b> . . . </b>
     )
-    // ...
 
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const { shopId, branchId, menuId } = useParams()
     const { services, selectedBranch } = useSelector((state: RootState) => state.appSlice)
     const [viewDetails, setViewDetails] = useState(false)
 
+    // changes
+    const [popUpService, setPopUpService] = useState<serviceType | null>(null)
+
     async function getServices() {
         if (shopId && menuId && branchId) {
             const ref = collection(db, "shops", shopId, "services")
-            const q = query(ref, where("menuId", "==", menuId), orderBy("index"));
+            const q = query(ref, where("menuId", "==", menuId), where("status", "==", "published"), orderBy("index"));
             const querySnapshot = await getDocs(q);
             const result = querySnapshot.docs.map(doc => doc.data())
             dispatch(setServices(result))
@@ -73,11 +76,16 @@ export const ServicesComponent = () => {
     }
 
     useEffect(() => {
-        getServices()
+        if ((menuId || branchId) === "undefined") {
+            navigate(`/${shopId}/${branchId}`)
+        } else {
+            getServices()
+        }
     }, [shopId, menuId, branchId])
 
     const handleClick = (service: serviceType) => {
-        dispatch(setSelectedService(service))
+        dispatch(setSelectedService(service)) // For Cart
+        setPopUpService(service)
         setViewDetails(true)
     }
 
@@ -106,7 +114,14 @@ export const ServicesComponent = () => {
 
             <BottomNav />
 
-            <ServiceCardPopUp setViewDetails={setViewDetails} viewDetails={viewDetails} />
+            {/* <ServiceCardPopUp 
+            onClose={()=>setPopUpService(null)}
+            // setViewDetails={setViewDetails} 
+            viewDetails={Boolean(popUpService)} 
+            popUpService={popUpService} 
+            /> */}
+
+            <ServiceCardPopUp setViewDetails={setViewDetails} viewDetails={viewDetails} popUpService={popUpService} />
 
         </div>
     )

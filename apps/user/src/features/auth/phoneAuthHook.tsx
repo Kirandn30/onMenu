@@ -1,7 +1,7 @@
 import { logEvent } from 'firebase/analytics';
 import { FirebaseApp, FirebaseError } from 'firebase/app'
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut, updateProfile } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { analytics, db } from '../../configs/firebaseConfig';
@@ -63,14 +63,22 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
         dispatch(setUserLoading())
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
-        window.confirmationResult.confirm(code).then((result) => {
+        window.confirmationResult.confirm(code).then(async (result) => {
             const user = result.user
             dispatch(setUser(user))
             if (auth.currentUser)
                 updateProfile(auth.currentUser, {
                     displayName: name
                 })
-            // window.location.href = redirectUrl ?? '/' // code translation :  redirectUrl??'/' =  redirectUrl?redirectUrl:'/'
+
+            const id = user.uid
+            await addDoc(collection(db, "users"), {
+                id,
+                name,
+                phoneNumber,
+                timeStamp: serverTimestamp(),
+            })
+
         }).catch((error: FirebaseError) => {
             dispatch(setUserError(error))
         });
@@ -87,11 +95,3 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
 
     return { sendOtp, verifyOtp, logout }
 }
-
-// export async function addUser(name: string, phone: number, id: string) {
-//     const ref = doc(db, "users", id)
-//     await setDoc(ref, {
-//         name: name,
-//         phoneNumber: phone
-//     });
-// }

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react'
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -7,19 +7,22 @@ import { Button, Card, CardActionArea, CardContent, CardMedia, Checkbox, IconBut
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store/store';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import { addToCart, setSelectedOptions } from '../redux/appSlice';
+import { addToCart, serviceType, setSelectedOptions } from '../redux/appSlice';
 
 const drawerWidth = "100%";
 
 type serviceCardDetailsProps = {
     setViewDetails: React.Dispatch<React.SetStateAction<boolean>>
     viewDetails: boolean
+    popUpService: serviceType | null
 }
 
-export function ServiceCardPopUp({ setViewDetails, viewDetails }: serviceCardDetailsProps) {
+export function ServiceCardPopUp({ setViewDetails, viewDetails, popUpService }: serviceCardDetailsProps) {
 
     const dispatch = useDispatch()
     const { selectedService, cart, selectedOptions } = useSelector((state: RootState) => state.appSlice)
+    const [viewDetailsLocal, setViewDetailsLocal] = useState(false)
+    const [popUpServiceLocal, setPopUpServiceLocal] = useState<serviceType | null>(null)
 
 
     const handleClick = () => {
@@ -33,8 +36,12 @@ export function ServiceCardPopUp({ setViewDetails, viewDetails }: serviceCardDet
         dispatch(setSelectedOptions([]))
     }
 
-    const addOptions = ({ io, maxAllow, optionIndex }: { io: any, maxAllow: string, optionIndex: number }) => {
+    const handleRecommendation = (recomService: any) => {
+        setPopUpServiceLocal(recomService)
+        setViewDetailsLocal(true)
+    }
 
+    const addOptions = ({ io, maxAllow, optionIndex }: { io: any, maxAllow: string, optionIndex: number }) => {
         if (selectedOptions.find(
             selected => selected.id === io.id && selected.optionIndex === optionIndex)) {
             dispatch(setSelectedOptions(selectedOptions.filter((selected) => {
@@ -103,16 +110,16 @@ export function ServiceCardPopUp({ setViewDetails, viewDetails }: serviceCardDet
                 </IconButton>
 
                 <div style={{ height: "400px", marginBottom: "100px", paddingBottom: "50px" }}>
-                    <img src={selectedService?.serviceImage} alt={selectedService?.serviceName} width="100%" />
-                    <Typography variant='h5'>{selectedService?.serviceName}</Typography>
-                    <Typography variant='body1'>{selectedService?.description}</Typography>
+                    <img src={popUpService?.serviceImage} alt={popUpService?.serviceName} width="100%" />
+                    <Typography variant='h5'>{popUpService?.serviceName}</Typography>
+                    <Typography variant='body1'>{popUpService?.description}</Typography>
                     <div style={{ display: "flex" }}>
                         <AccessTimeIcon />
                         <Typography variant='body1'>
-                            Estimated Time: {selectedService?.estimatedTime} mins
+                            Estimated Time: {popUpService?.estimatedTime} mins
                         </Typography>
                     </div>
-                    {selectedService?.options.map((o, index) => (
+                    {popUpService?.options.map((o, index) => (
                         <div key={o.id}>
                             {o.title}
                             {o.innerOptions.map((io) => (
@@ -132,8 +139,9 @@ export function ServiceCardPopUp({ setViewDetails, viewDetails }: serviceCardDet
                     ))}
                     <div>
                         <Typography>Recommendations: </Typography>
-                        {selectedService?.recommended.map(rs => (
-                            <Card key={rs.id} sx={{ maxWidth: "200px", height: "200px" }}>
+                        {popUpService?.recommended.map(rs => (
+                            <Card key={rs.id} sx={{ maxWidth: "200px", height: "200px" }}
+                                onClick={() => handleRecommendation(rs)}>
                                 <CardActionArea>
                                     <CardMedia
                                         component="img"
@@ -156,7 +164,7 @@ export function ServiceCardPopUp({ setViewDetails, viewDetails }: serviceCardDet
                 </div>
 
                 <div style={bottomNavStyles}>
-                    {selectedService?.price}
+                    {popUpService?.price}
                     <Button sx={{ height: "40px", width: "80px" }} size='small'
                         variant="contained" onClick={handleClick}>
                         Book
@@ -164,6 +172,8 @@ export function ServiceCardPopUp({ setViewDetails, viewDetails }: serviceCardDet
                 </div>
 
             </Drawer>
+
+            {viewDetailsLocal && <ServiceCardPopUp setViewDetails={setViewDetailsLocal} viewDetails={viewDetailsLocal} popUpService={popUpServiceLocal}/>}
         </Box>
     );
 }

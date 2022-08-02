@@ -60,7 +60,7 @@ export default function DrawerLeft() {
       icon: <AccessTimeOutlinedIcon />,
       listName: "Timings",
       clickFunc: () => {
-        console.log("time clicked");
+        navigate(`/${shopId}/timings`)
       }
     },
     {

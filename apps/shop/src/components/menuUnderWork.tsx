@@ -1,21 +1,20 @@
 import { Accordion, AccordionDetails, AccordionSummary, Button, Card, CardActions, CardContent, CardMedia, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { collection, doc, getDocs, orderBy, query, updateDoc, where, writeBatch } from 'firebase/firestore';
+import { collection, doc, getDocs, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
-import { menuType } from 'apps/shop/src/redux/services';
-import { db } from 'apps/shop/src/config/firebase';
-import { RootState } from 'apps/shop/src/redux/store';
+import { db } from '../config/firebase';
+import { RootState } from '../redux/store';
+import { menuType } from '../redux/services';
 
 type Props = {}
 
-export const Bin = (props: Props) => {
+export const MenuUnderWork = (props: Props) => {
 
     const { selectedShop } = useSelector((state: RootState) => state.shop)
     const [allBranches, setAllBranches] = useState<any>([])
     const [allMenu, setAllMenu] = useState<any>([])
     const [clickedMenu, setClickedMenu] = useState<any>([]) //Selected branch menu
-    const [unDeletedMenu, setUnDeletedMenu] = useState([])
 
     //Accordin  
     const [expanded, setExpanded] = React.useState<string | false>(false);
@@ -27,15 +26,16 @@ export const Bin = (props: Props) => {
 
     // Filtered menu according to branches
     const getClickedMenu = (branchId: string) => {
-        setClickedMenu(allMenu.filter((fm: menuType) => fm.branchId === branchId && fm.status === "deleted"))
-        setUnDeletedMenu(allMenu.filter((fm: menuType) => fm.branchId === branchId && fm.status !== "deleted"))
+        setClickedMenu(allMenu.filter((fm: menuType) => fm.branchId === branchId &&
+            (fm.status === "created")
+        ))
     }
 
     // get all the menu
     async function getMenus() {
         if ((selectedShop)) {
             const ref = collection(db, "shops", selectedShop.id, "menu")
-            // const q = query(ref, where("status", "==", "deleted"));
+            // const q = query(ref, orderBy("index"));
             const querySnapshot = await getDocs(ref);
             const result = querySnapshot.docs.map(doc => doc.data())
             if (result.length > 0) {
@@ -55,43 +55,18 @@ export const Bin = (props: Props) => {
         }
     }
 
-    // Menu Status
-    const changeMenuStatus = async (id: string) => {
-        const filteredMenu = clickedMenu.filter((fm: menuType) => fm.id !== id)
+    // Change menu status
+    const changeMenuStatus = async (mId: string, statusParam: string) => {
+        const filteredMenu = clickedMenu.filter((fm: menuType) => fm.id !== mId)
         if (selectedShop) {
-            const ref = doc(db, "shops", selectedShop.id, "menu", id)
+            const ref = doc(db, "shops", selectedShop.id, "menu", mId
+            )
             await updateDoc(ref, {
-                status: "created",
-                index: unDeletedMenu.length 
+                status: statusParam
             })
         }
         setClickedMenu(filteredMenu)
-        // updateIndex(id)
     }
-
-    // Update index
-    // async function updateIndex(id: string) {
-    //     try {
-    //         const result = clickedMenu.filter((m: menuType) => m.id !== id)
-    //         result.map((m: menuType) => {
-    //             if (m.index >= 0)
-    //                 m.index - 1
-    //         })
-    //         const batch = writeBatch(db)
-    //         if (selectedShop) {
-    //             result.forEach(async (m: any, index: number) => {
-    //                 const branchesRef = doc(db, "shops", selectedShop.id, "menu", m.id);
-    //                 batch.update(branchesRef, {
-    //                     index: index
-    //                 })
-    //             })
-    //             await batch.commit()
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-
-    //     }
-    // }
 
     useEffect(() => {
         getBranches()
@@ -101,7 +76,7 @@ export const Bin = (props: Props) => {
     return (
         <div>
             {allBranches.map((b: any) => (
-                <Accordion expanded={expanded === b.branchName} onChange={handleChange(b.branchName, b.id)}>
+                <Accordion key={b.id} expanded={expanded === b.branchName} onChange={handleChange(b.branchName, b.id)}>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                     >
@@ -137,9 +112,15 @@ export const Bin = (props: Props) => {
                                         </CardContent>
                                         <CardActions>
                                             <Button size="small"
-                                                onClick={async () => await changeMenuStatus(cm.id)}
+                                                onClick={async () => await changeMenuStatus(cm.id, cm.status)}
                                             >
-                                                Restore</Button>
+                                                Publish
+                                            </Button>
+                                            <Button size="small"
+                                                onClick={async () => await changeMenuStatus(cm.id, cm.status)}
+                                            >
+                                                Unpublish
+                                            </Button>
                                         </CardActions>
                                     </Card>
 

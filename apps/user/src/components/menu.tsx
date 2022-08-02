@@ -17,7 +17,7 @@ export const MenuComponent = () => {
     async function getMenu() {
         if (shopId && branchId) {
             const ref = collection(db, "shops", shopId, "menu")
-            const q = query(ref, where("branchId", "==", branchId), orderBy("index"));
+            const q = query(ref, where("branchId", "==", branchId), where("status", "==", "published"), orderBy("index"));
             const querySnapshot = await getDocs(q);
             const result = querySnapshot.docs.map(doc => doc.data())
             dispatch(setMenu(result))
@@ -36,15 +36,19 @@ export const MenuComponent = () => {
     }
 
     useEffect(() => {
-        getMenu()
+        if (branchId === "undefined") {
+            navigate(`/${shopId}`)
+        } else {
+            getMenu()
+        }
     }, [shopId, branchId])
 
-    const handleCardClick = (m: menuType)=>{
+    const handleCardClick = (m: menuType) => {
         dispatch(setSelectedMenu(m))
         navigate(`/${shopId}/${selectedBranch?.id}/${m.id}`)
     }
 
-    const menuStyles:React.CSSProperties ={
+    const menuStyles: React.CSSProperties = {
         maxWidth: 345,
         margin: "auto",
         marginBottom: "10px"
@@ -53,7 +57,7 @@ export const MenuComponent = () => {
     return (
         <div>
             {menu.map((m: menuType) => (
-                <Card key={m.id} sx={menuStyles} onClick={()=>handleCardClick(m)}>
+                <Card key={m.id} sx={menuStyles} onClick={() => handleCardClick(m)}>
                     <CardActionArea>
                         <CardMedia
                             component="img"

@@ -1,22 +1,22 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { CloudUploadOutlined } from '@mui/icons-material'
-import { Button, Checkbox, Typography } from '@mui/material'
+import { Button, Checkbox, Snackbar, Stack, Typography } from '@mui/material'
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { TimePicker } from '@mui/x-date-pickers'
 import { MiuracImage } from '@on-menu/miurac-image'
 import { app, db } from 'apps/shop/src/config/firebase'
 import { setSelectedBranches, setSelectedMenu, setSelectedService } from 'apps/shop/src/redux/services'
-import { setselectedShop, shopstype } from 'apps/shop/src/redux/shops'
+import { setselectedShop } from 'apps/shop/src/redux/shops'
 import { RootState } from 'apps/shop/src/redux/store'
 import InputField from 'apps/shop/src/ui-components/Input'
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import * as yup from 'yup'
 import { Login } from '../login'
 import _ from "lodash"
-import { v4 as uuidv4 } from 'uuid';
 
 const schema = yup.object({
     shopName: yup.string().min(4, "Minimum 4 characters is required").required("Shop name is required"),
@@ -34,18 +34,31 @@ const schema = yup.object({
 
 })
 
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+    props,
+    ref,
+) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 export const Settings = () => {
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const { shopId } = useParams()
     const { register, handleSubmit, setValue, clearErrors, formState: { errors }, setError } = useForm({ resolver: yupResolver(schema) })
     const [logo, setLogo] = useState<string | null>(null)
     const { selectedShop } = useSelector((state: RootState) => state.shop)
     const [selectedTiming, setSelectedTiming] = useState<any>([])
+    const [open, setOpen] = React.useState(false)
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
-    console.log(selectedTiming);
-
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpen(false);
+    }
 
     const onsubmit = async (data: any) => {
 
@@ -56,16 +69,14 @@ export const Settings = () => {
                 timings: selectedTiming,
             }
 
-            // if (data.shopName !== selectedShop?.shopName) {
-            //     const id = `${data.shopName.replace(" ", "-")}-${uuidv4()}`
-            //     targetData = {...targetData, id}
-            // }
-
             if (selectedShop) {
                 const ref = doc(db, `shops/${selectedShop.id}`)
                 await updateDoc(ref, targetData);
-                dispatch(setselectedShop(targetData))
+                dispatch(setselectedShop({ ...selectedShop, targetData }))
             }
+
+            setOpen(true);
+
         } catch (error) {
             console.log(error)
         }
@@ -152,8 +163,8 @@ export const Settings = () => {
                             )}
                             <div>
                                 {/* <Typography color={'error'} >
-                            {errors['menuImage']?.message}
-                        </Typography> */}
+                                    {errors['menuImage']?.message}
+                                </Typography> */}
                             </div>
                         </div>
 
@@ -295,7 +306,13 @@ export const Settings = () => {
                 <Button variant='contained' type='submit'>Save</Button>
             </form >
 
-            <Button variant='contained' onClick={switchShop}>Switch Shop</Button>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                    Successfully Saved!
+                </Alert>
+            </Snackbar>
+
+            <Button sx={{ margin: "10px 0px" }} variant='contained' onClick={switchShop}>Switch Shop</Button>
 
 
         </div>

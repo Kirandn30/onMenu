@@ -16,7 +16,11 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { PeopleAltOutlined, DocumentScannerOutlined, FormatListBulletedOutlined, LoyaltyOutlined, WarningAmberOutlined, AssessmentOutlined, AccountBalanceOutlined, SettingsOutlined, InfoOutlined, DeleteOutlined, LoginOutlined, PersonOutlineOutlined, NotificationsNoneOutlined } from '@mui/icons-material';
+import {
+    PeopleAltOutlined, DocumentScannerOutlined, LoyaltyOutlined,
+    WarningAmberOutlined, AssessmentOutlined, AccountBalanceOutlined, SettingsOutlined, InfoOutlined,
+    DeleteOutlined, LoginOutlined, PersonOutlineOutlined, NotificationsNoneOutlined
+} from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
@@ -111,6 +115,7 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
         setOpen(true);
     }
 
+    //Side Menu Data
     const navData = [
         {
             icon: <DocumentScannerOutlined />,
@@ -166,6 +171,8 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
     return (
 
         <Box sx={{ display: 'flex' }}>
+
+            {/* Logout confirmation modal */}
             <Simplemodal open={modal} onClose={() => setModal(false)}>
                 <div style={{ marginTop: "20px", display: "grid", gap: "30px" }}>
                     <Typography variant='h5'>Are you sure you want to <br /> logout</Typography>
@@ -175,9 +182,14 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
                     </div>
                 </div>
             </Simplemodal>
+
             <CssBaseline />
+
+            {/* Top bar */}
             <AppBar position="fixed" open={open} color="inherit">
                 <Toolbar style={{ justifyContent: "space-between" }}>
+
+                    {/* Menu Button */}
                     <IconButton
                         className="menu"
                         color="inherit"
@@ -191,28 +203,34 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
                     >
                         <MenuIcon />
                     </IconButton>
+
+                    {/* Top bar navigation */}
                     <div style={{ display: "flex", gap: "40px", width: "100%" }}>
-                        <Typography className="menu" style={{
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap", cursor: "pointer"
-                        }} variant="subtitle2" component="div">
-                            Home
-                        </Typography>
-                        <Typography className="menu" style={{
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap", cursor: "pointer"
-                        }} variant="subtitle2" component="div">
+
+                        <Typography className="menu" style=
+                            {{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap", cursor: "pointer"
+                            }}
+                            variant="subtitle2" component="div"
+                            onClick={() => navigate(`/${selectedShop?.id}/menuunderwork`)}
+                        >
                             Menu under work
                         </Typography>
-                        <Typography className="menu" style={{
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap", cursor: "pointer"
-                        }} variant="subtitle2" component="div">
-                            Publish Menu
+
+                        <Typography className="menu" style=
+                            {{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap", cursor: "pointer"
+                            }}
+                            variant="subtitle2" component="div"
+                            onClick={() => navigate(`/${selectedShop?.id}/publishedmenu`)}
+                        >
+                            Published Menu
                         </Typography>
+
                         <Typography className="menu" style={{
                             overflow: "hidden",
                             textOverflow: "ellipsis",
@@ -220,6 +238,7 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
                         }} variant="subtitle2" component="div">
                             Download QR
                         </Typography>
+
                         <Typography className="menu" style={{
                             overflow: "hidden",
                             textOverflow: "ellipsis",
@@ -227,7 +246,10 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
                         }} variant="subtitle2" component="div">
                             Contact <strong style={{ color: '#007AFF', cursor: "pointer" }}> On Menu</strong>
                         </Typography>
+
                     </div>
+
+                    {/* User Email */}
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 5fr 1fr", justifyContent: "center" }}>
                         <PersonOutlineOutlined />
                         <Typography style={{
@@ -237,8 +259,11 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
                         }}>{User?.email}</Typography>
                         <NotificationsNoneOutlined className="menu" style={{ marginLeft: "10px", cursor: "pointer" }} />
                     </div>
+
                 </Toolbar>
             </AppBar>
+
+            {/* Side Menu */}
             <Drawer variant="permanent" open={open}>
                 <DrawerHeader>
                     <IconButton onClick={() => setOpen(false)}>

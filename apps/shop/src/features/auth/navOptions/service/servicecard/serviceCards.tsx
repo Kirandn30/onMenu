@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTransition, animated } from "react-spring"
 import { ServiceCardForm } from './serviceCardForm'
-import { collection, doc, getDocs, orderBy, query, updateDoc, writeBatch } from 'firebase/firestore'
+import { collection, doc, getDocs, orderBy, query, updateDoc, where, writeBatch } from 'firebase/firestore'
 import { RootState } from 'apps/shop/src/redux/store'
 import { useDispatch, useSelector } from 'react-redux'
 import { db } from 'apps/shop/src/config/firebase'
@@ -21,43 +21,46 @@ export const Servicecard = () => {
     const [serviceToBeEdited, setServiceToBeEdited] = useState<serviceType | null>(null)
     const [orderChanged, setOrderChanged] = useState<boolean>(false)
     const [filteredServices, setFilteredServices] = useState<Array<serviceType> | null>([])
+    const [dndServices, setDndServices] = useState<Array<any>>([])
 
     const transition = useTransition("a", {
         from: { x: 0, y: 100, opacity: 0 },
         enter: { x: 0, y: 0, opacity: 1 },
     })
 
+    // Get all services
     async function getServices() {
         try {
             if (selectedShop && selectedBranch && selectedMenu) {
                 const ref = collection(db, "shops", selectedShop.id, "services")
-                const q = query(ref, orderBy("index"));
+                const q = query(ref, where("menuId", "==", selectedMenu.id),
+                    where("status", "in", ["published", "unpublished"]), orderBy("index"));
                 const querySnapshot = await getDocs(q);
                 const result = querySnapshot.docs.map(doc => doc.data())
 
-                if (result.length > 0) {
-                    dispatch(setServices(result)) // all the services  
+                dispatch(setServices(result)) // set services to state
 
-                    const defaultService = serviceId ? result.find((s) => s['id'] === serviceId) : result[0]
-                    if (!defaultService) {
-                        dispatch(setSelectedService(result[0]))
-                        navigate(`/${selectedShop.id}/${selectedBranch.id}/${selectedMenu.id}/${result[0]['id']}`)
-                    } else {
-                        dispatch(setSelectedService(defaultService))
-                        navigate(`/${selectedShop.id}/${selectedBranch.id}/${selectedMenu.id}/${defaultService['id']}`)
-                    }
-                }
+                // const defaultService = serviceId ? result.find((s) => s['id'] === serviceId) : result[0]
+                // if (!defaultService) {
+                //     dispatch(setSelectedService(result[0]))
+                //     navigate(`/${selectedShop.id}/${selectedBranch.id}/${selectedMenu.id}/${result[0]['id']}`)
+                // } else {
+                //     dispatch(setSelectedService(defaultService))
+                //     navigate(`/${selectedShop.id}/${selectedBranch.id}/${selectedMenu.id}/${defaultService['id']}`)
+                // }
+
             }
         } catch (error) {
             console.log(error);
         }
     }
 
+    // update indices to db after D&D
     async function updateIndex() {
         try {
             const batch = writeBatch(db)
-            if (selectedShop && filteredServices) {
-                filteredServices.forEach(async s => {
+            if (selectedShop && dndServices) {
+                dndServices.forEach(async s => {
                     const branchesRef = doc(db, "shops", selectedShop.id, "services", s.id);
                     batch.update(branchesRef, {
                         index: s.index
@@ -67,23 +70,20 @@ export const Servicecard = () => {
             }
         } catch (error) {
             console.log(error);
-
         }
     }
-
-    //To filter services
-    useEffect(() => {
-        if (selectedMenu) {
-            const filtered = services.filter((fs) => fs.menuId == selectedMenu.id)
-            setFilteredServices(filtered)
-        } else {
-            setFilteredServices(null)
-        }
-    }, [services, selectedMenu, selectedBranch])
 
     useEffect(() => {
         getServices()
     }, [editMode, selectedShop, selectedBranch, selectedMenu])
+
+    useEffect(() => {
+        if (services.length > 0) {
+            setDndServices(services) // Services copy for dnd
+        } else {
+            setDndServices([])
+        }
+    }, [services, selectedMenu])
 
     // Drag and Drop Function
     const onDragEnd = (result: DropResult) => {
@@ -91,19 +91,17 @@ export const Servicecard = () => {
         if (!destination) return
         if (destination.index === source.index) return
 
-        if(!filteredServices) return
-        const finalResult = Array.from(filteredServices)  // we are copying the branches to a new variable for manipulation.
+        const finalResult = Array.from(dndServices)  // we are copying the branches to a new variable for manipulation.
         const [removed] = finalResult.splice(source.index, 1)
         finalResult.splice(destination.index, 0, removed)
         const newData = finalResult.map((fs, index) => ({ ...fs, index }))
-        setFilteredServices(newData)
+        setDndServices(newData)
         setOrderChanged(true)
-        // const toUpdate = services.filter((fs) => fs.menuId !== selectedMenu?.id)
-        dispatch(setServices({ ...services, filteredServices }))
     }
-
+    console.log(dndServices);
     return (
-        <>
+
+        <div style={{ position: "relative" }}>
             <div>
                 {transition((style: any) =>
                     <animated.div style={style}>
@@ -116,7 +114,7 @@ export const Servicecard = () => {
                                     {(provided) => (
                                         <div ref={provided.innerRef} {...provided.droppableProps}>
 
-                                            {filteredServices && filteredServices.map((s: serviceType) => (
+                                            {dndServices.map((s: serviceType) => (
 
                                                 <Draggable key={s.id} draggableId={s.id} index={s.index}>
                                                     {(provided, snapshot) => (
@@ -143,7 +141,7 @@ export const Servicecard = () => {
             </div>
 
             {/* Save Order Button */}
-            {orderChanged && <div style={{ position: "absolute", left: "40%" }}>
+            {orderChanged && <div style={{ position: "absolute", top: 0, left: "20%" }}>
                 {transition((style, item) =>
                     item && <animated.div style={{
                         ...style, textAlign: "center", width: "20vw", margin: "auto",
@@ -152,13 +150,26 @@ export const Servicecard = () => {
                     }}>
                         Save changes
                         <div style={{ display: "flex", justifyContent: "center", gap: "30px", marginTop: "10px" }}>
-                            <Button onClick={() => setOrderChanged(false)} variant="outlined" size="small">cancel</Button>
-                            <Button onClick={() => { setOrderChanged(false); updateIndex() }} variant="contained" size="small">save</Button>
+                            <Button onClick={() => {
+                                setOrderChanged(false)
+                                setDndServices(services)
+                            }}
+                                variant="outlined" size="small"
+                            >cancel
+                            </Button>
+                            <Button onClick={async () => {
+                                setOrderChanged(false);
+                                await updateIndex()
+                                dispatch(setServices(dndServices))
+                            }}
+                                variant="contained" size="small"
+                            >save
+                            </Button>
                         </div>
                     </animated.div>
                 )}
             </div>}
-        </>
+        </div>
 
     )
 }

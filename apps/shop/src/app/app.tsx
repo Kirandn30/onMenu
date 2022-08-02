@@ -12,7 +12,7 @@ import { auth, db } from '../config/firebase';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Alert, Snackbar, Typography } from '@mui/material';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { setselectedShop, Setshops } from '../redux/shops';
+import { Setshops } from '../redux/shops';
 import { NewHeader } from '../components/newHeader';
 import { Service } from '../features/auth/navOptions/service/servicesDashboard';
 import { Activecustomers } from '../features/auth/navOptions/activeCx';
@@ -20,11 +20,12 @@ import { Analytics } from '../features/auth/navOptions/analytics';
 import { Bin } from '../features/auth/navOptions/bin';
 import { Instructions } from '../features/auth/navOptions/instructions';
 import { Payments } from '../features/auth/navOptions/payments';
-import { Loyalty } from '../features/auth/navOptions/loyalty';
+import { Loyalty } from '../features/loyalty';
 import { Servicealert } from '../features/auth/navOptions/servicealert';
 import { Settings } from '../features/auth/navOptions/settings';
 import { SetShop } from '../components/Setshop';
-import { MenuForm } from '../features/auth/navOptions/service/menu/menuForm';
+import { MenuUnderWork } from '../components/menuUnderWork';
+import { PublishedMenu } from '../components/publishedMenu';
 
 
 export function App() {
@@ -86,6 +87,8 @@ export function App() {
             ) : (
               < NewHeader>
                 <Routes>
+                  <Route path='/:shopid/publishedmenu' element={<PublishedMenu />} />
+                  <Route path='/:shopid/menuunderwork' element={<MenuUnderWork />} />
                   <Route path='/:shopid/activecustomers' element={<Activecustomers />} />
                   <Route path='/:shopid/analytics' element={<Analytics />} />
                   <Route path='/:shopid/bin' element={<Bin />} />

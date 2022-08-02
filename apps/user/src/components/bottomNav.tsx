@@ -11,7 +11,7 @@ import { RootState } from '../redux/store/store';
 export const BottomNav = () => {
 
     const navigate = useNavigate()
-    const { shopId } = useParams()
+    const { shopId, branchId } = useParams()
     const { selectedBranch, selectedMenu } = useSelector((state: RootState) => state.appSlice)
     const { cart } = useSelector((state: RootState) => state.appSlice)
 
@@ -27,7 +27,7 @@ export const BottomNav = () => {
         position: "fixed",
         left: "0",
         bottom: "0",
-        width: "100%",
+        maxWidth: "400px",
     }
 
     const menuButton: React.CSSProperties = {
@@ -40,45 +40,53 @@ export const BottomNav = () => {
     return (
         <div style={bottomNavStyles}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div>
-                    <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/feedback`)}>
-                        <div>
-                            <ThumbsUpDownOutlinedIcon />
-                            <p style={{ margin: 0 }}>Feedback</p>
-                        </div>
-                    </IconButton>
-                    <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/search`)}>
-                        <div>
-                            <SearchOutlinedIcon />
-                            <p style={{ margin: 0 }}>Search</p>
-                        </div>
-                    </IconButton>
-                </div>
-                <div>
-                    <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/cart`)}>
-                        <div>
-                            <Badge badgeContent={cart.length} color={'primary'}>
-                                <ShoppingCartOutlinedIcon />
-                            </Badge>
-                            <p style={{ margin: 0 }}>Cart</p>
-                        </div>
-                    </IconButton>
-                    <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/payment`)}>
-                        <div>
-                            <PaymentOutlinedIcon />
-                            <p style={{ margin: 0 }}>Payment</p>
-                        </div>
-                    </IconButton>
-                </div>
+
+                <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/feedback`)}>
+                    <div>
+                        <ThumbsUpDownOutlinedIcon />
+                        <p style={{ margin: 0 }}>Feedback</p>
+                    </div>
+                </IconButton>
+                <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/${branchId}/search`)}>
+                    <div>
+                        <SearchOutlinedIcon />
+                        <p style={{ margin: 0 }}>Search</p>
+                    </div>
+                </IconButton>
+
+                <IconButton sx={{ ...iconButtonStyles}}
+                    onClick={() => navigate(`/${shopId}/${selectedBranch?.id}/${selectedMenu?.id}`)}>
+                    <div>
+                        <PowerSettingsNewOutlinedIcon />
+                        <p style={{ margin: 0 }}>Menu</p>
+                    </div>
+                </IconButton>
+
+                <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/cart`)}>
+                    <div>
+                        <Badge badgeContent={cart.length} color={'primary'}>
+                            <ShoppingCartOutlinedIcon />
+                        </Badge>
+                        <p style={{ margin: 0 }}>Cart</p>
+                    </div>
+                </IconButton>
+                <IconButton sx={iconButtonStyles} onClick={() => navigate(`/${shopId}/payment`)}>
+                    <div>
+                        <PaymentOutlinedIcon />
+                        <p style={{ margin: 0 }}>Payment</p>
+                    </div>
+                </IconButton>
+
+
             </div>
 
-            <IconButton sx={{ ...iconButtonStyles, ...menuButton }}
+            {/* <IconButton sx={{ ...iconButtonStyles, ...menuButton }}
                 onClick={() => navigate(`/${shopId}/${selectedBranch?.id}/${selectedMenu?.id}`)}>
                 <div>
                     <PowerSettingsNewOutlinedIcon />
                     <p style={{ margin: "10px 0px" }}>Menu</p>
                 </div>
-            </IconButton>
+            </IconButton> */}
 
         </div>
     )

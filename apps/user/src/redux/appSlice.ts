@@ -79,11 +79,12 @@ export interface branchesType {
     id: string;
     enabled: boolean;
     branchName: string;
+    branchImage: string;
     city: string;
     index: number;
     address: string;
-    longitude: string;
-    latitude: string;
+    Longitude: string;
+    Latitude: string;
 }
 
 export interface menuType {

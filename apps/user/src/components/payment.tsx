@@ -1,10 +1,11 @@
 import { Button } from '@mui/material'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { db } from '../configs/firebaseConfig'
 import InputField from '../input-field/input-field'
+import { addToCart } from '../redux/appSlice'
 import { RootState } from '../redux/store/store'
 import { BottomNav } from './bottomNav'
 
@@ -12,6 +13,7 @@ type Props = {}
 
 export const Payment = (props: Props) => {
 
+    const dispatch = useDispatch()
     const { shopId } = useParams()
     const { user } = useSelector((state: RootState) => state.User)
     const { selectedBranch, totalAmount } = useSelector((state: RootState) => state.appSlice)
@@ -32,8 +34,6 @@ export const Payment = (props: Props) => {
     const paymentResult = {
         by: 'Razorpay',
     }
-
-
 
     async function loadRazorpay() {
         // if (prefill.amount === "" && !takeawayMode) {
@@ -64,6 +64,7 @@ export const Payment = (props: Props) => {
                     status: 'success',
                     paymentStatus: 'Success',
                     timeStamp: serverTimestamp(),
+                    userId: user?.uid,
                     ...prefill,
                     shopId: shopId,
                     id: response.razorpay_payment_id
@@ -77,6 +78,8 @@ export const Payment = (props: Props) => {
                 setPrefill({
                     amount: '',
                 })
+
+                dispatch(addToCart([]))
             },
             prefill: prefill,
             description: "payment to shop",

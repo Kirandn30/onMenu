@@ -1,13 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-export interface authState {
+export interface shopSate {
     shops: null | shopstype[]
-    selectedShop: null | shopstype
+    selectedShop: null | shopstype,
+    loyalties: loyaltyType[]
 }
 
-const initialState: authState = {
+const initialState: shopSate = {
     shops: null,
-    selectedShop: null
+    selectedShop: null,
+    loyalties: [],
 }
 
 export const shopSlice = createSlice({
@@ -19,12 +21,18 @@ export const shopSlice = createSlice({
         },
         setselectedShop: (state, action) => {
             state.selectedShop = action.payload
+        },
+        addLoyalty: (state, action) => {
+            state.loyalties = [...state.loyalties, action.payload]
+        },
+        addLoyalties: (state, action) => {
+            state.loyalties = action.payload
         }
     },
 })
 
 // Action creators are generated for each case reducer function
-export const { Setshops, setselectedShop } = shopSlice.actions
+export const { Setshops, setselectedShop, addLoyalty, addLoyalties } = shopSlice.actions
 
 export default shopSlice.reducer
 
@@ -46,4 +54,16 @@ export interface paymentsType {
     timeStamp: any,
     amount: string,
     by: string,
+}
+
+export interface loyaltyType {
+    id: string;
+    loyaltyName: string;
+    minVisit: number | null;
+    maxVisit: number | null;
+    exactVisit: number | null;
+    minSpend: number | null;
+    maxSpend: number | null;
+    minDays: number | null;
+    maxDays: number | null;
 }
